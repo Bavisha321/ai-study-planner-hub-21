@@ -10,6 +10,7 @@ import DashboardSidebar from "./components/Dashboard/DashboardSidebar";
 
 import Index from "./pages/Index";
 import Home from "./pages/Home";
+import Courses from "./pages/Courses";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import About from "./pages/About";
@@ -39,6 +40,7 @@ const WrappedRoutes = () => {
     <AppLayout>
       <Routes>
         <Route path="/home" element={<Home />} />
+        <Route path="/courses" element={<Courses />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
