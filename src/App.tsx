@@ -3,9 +3,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import NavigationBar from "./components/NavigationBar";
+import DashboardSidebar from "./components/Dashboard/DashboardSidebar";
 
 import Index from "./pages/Index";
 import Home from "./pages/Home";
@@ -16,21 +17,47 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Create a component to conditionally render the sidebar
+const AppLayout = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const showSidebar = ['/home', '/courses', '/analytics', '/settings', '/study-planner'].includes(location.pathname);
+  
+  return (
+    <>
+      <NavigationBar />
+      {showSidebar && <DashboardSidebar />}
+      <div className={showSidebar ? "md:pl-60" : ""}>
+        {children}
+      </div>
+    </>
+  );
+};
+
+// Wrapper component for routes that need the AppLayout
+const WrappedRoutes = () => {
+  return (
+    <AppLayout>
+      <Routes>
+        <Route path="/home" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/about" element={<About />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AppLayout>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <NavigationBar />
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Index />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/about" element={<About />} />
-            <Route path="*" element={<NotFound />} />
+            <Route path="/*" element={<WrappedRoutes />} />
           </Routes>
         </AnimatePresence>
       </BrowserRouter>
