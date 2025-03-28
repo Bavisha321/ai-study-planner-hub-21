@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { BarChart2, BookOpen, Calendar, Home, Settings } from "lucide-react";
+import { BarChart2, BookOpen, Calendar, Home, Settings, Clock } from "lucide-react";
 
 const DashboardSidebar = () => {
   const location = useLocation();
@@ -11,6 +11,7 @@ const DashboardSidebar = () => {
     { icon: BookOpen, label: 'Courses', path: '/courses' },
     { icon: BarChart2, label: 'Analytics', path: '/analytics' },
     { icon: Calendar, label: 'Study Planner', path: '/study-planner' },
+    { icon: Clock, label: 'Study Timer', path: '/timer' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
   

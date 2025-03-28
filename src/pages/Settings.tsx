@@ -4,7 +4,18 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { motion } from "framer-motion";
-import { Bell, Database, Lock, Moon, User, UserCog } from "lucide-react";
+import { 
+  Bell, 
+  Database, 
+  Lock, 
+  Moon, 
+  User, 
+  UserCog, 
+  Clock,
+  BellRing,
+  TimerReset,
+  Key
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 import { Button } from "@/components/ui/button";
@@ -26,6 +37,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 
 const profileFormSchema = z.object({
   username: z
@@ -47,6 +66,8 @@ const notificationsFormSchema = z.object({
   studyReminders: z.boolean().default(true),
   deadlineAlerts: z.boolean().default(true),
   achievementNotifications: z.boolean().default(true),
+  weeklyReports: z.boolean().default(true),
+  inactivityReminders: z.boolean().default(false),
   marketingEmails: z.boolean().default(false),
 });
 
@@ -55,9 +76,28 @@ const appearanceFormSchema = z.object({
   fontSize: z.enum(["small", "medium", "large"]),
 });
 
+const securityFormSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string().min(8, "Password must be at least 8 characters"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+const studyTimingFormSchema = z.object({
+  defaultSessionLength: z.number().min(5).max(120),
+  shortBreakLength: z.number().min(1).max(30),
+  longBreakLength: z.number().min(5).max(60),
+  sessionsBeforeLongBreak: z.number().min(1).max(10),
+  autoStartNextSession: z.boolean().default(false),
+});
+
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 type NotificationsFormValues = z.infer<typeof notificationsFormSchema>;
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
+type SecurityFormValues = z.infer<typeof securityFormSchema>;
+type StudyTimingFormValues = z.infer<typeof studyTimingFormSchema>;
 
 export default function Settings() {
   const { toast } = useToast();
@@ -88,6 +128,8 @@ export default function Settings() {
       studyReminders: true,
       deadlineAlerts: true,
       achievementNotifications: true,
+      weeklyReports: true,
+      inactivityReminders: false,
       marketingEmails: false,
     },
   });
@@ -113,6 +155,44 @@ export default function Settings() {
     toast({
       title: "Appearance settings saved",
       description: "Your visual preferences have been updated.",
+    });
+    console.log(data);
+  }
+
+  // Security form
+  const securityForm = useForm<SecurityFormValues>({
+    resolver: zodResolver(securityFormSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  function onSecuritySubmit(data: SecurityFormValues) {
+    toast({
+      title: "Password updated",
+      description: "Your password has been changed successfully.",
+    });
+    console.log(data);
+  }
+
+  // Study Timing form
+  const studyTimingForm = useForm<StudyTimingFormValues>({
+    resolver: zodResolver(studyTimingFormSchema),
+    defaultValues: {
+      defaultSessionLength: 25,
+      shortBreakLength: 5,
+      longBreakLength: 15,
+      sessionsBeforeLongBreak: 4,
+      autoStartNextSession: false,
+    },
+  });
+
+  function onStudyTimingSubmit(data: StudyTimingFormValues) {
+    toast({
+      title: "Study timing settings saved",
+      description: "Your study session timing preferences have been updated.",
     });
     console.log(data);
   }
@@ -163,6 +243,13 @@ export default function Settings() {
                 >
                   <Bell className="h-4 w-4" />
                   <span>Notifications</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="timing" 
+                  className="flex items-center justify-start gap-2 px-3 py-2"
+                >
+                  <Clock className="h-4 w-4" />
+                  <span>Study Timing</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="appearance" 
@@ -263,26 +350,44 @@ export default function Settings() {
                   </p>
                 </div>
                 <Separator />
-                <div className="space-y-4">
-                  <h4 className="text-sm font-medium">Connected Accounts</h4>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-medium">Google</div>
-                        <div className="text-xs text-muted-foreground">
-                          Not connected
+                
+                <div className="space-y-6">
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Display Name</h4>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Update Display Name</label>
+                        <div className="flex gap-2">
+                          <Input placeholder="New display name" className="flex-1" />
+                          <Button>Update</Button>
                         </div>
                       </div>
-                      <Button variant="outline">Connect</Button>
                     </div>
-                    <div className="flex items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <div className="text-sm font-medium">Apple</div>
-                        <div className="text-xs text-muted-foreground">
-                          Not connected
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Connected Accounts</h4>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <div className="text-sm font-medium">Google</div>
+                          <div className="text-xs text-muted-foreground">
+                            Not connected
+                          </div>
                         </div>
+                        <Button variant="outline">Connect</Button>
                       </div>
-                      <Button variant="outline">Connect</Button>
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <div className="text-sm font-medium">Apple</div>
+                          <div className="text-xs text-muted-foreground">
+                            Not connected
+                          </div>
+                        </div>
+                        <Button variant="outline">Connect</Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -306,7 +411,8 @@ export default function Settings() {
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">
+                            <FormLabel className="text-base flex items-center gap-2">
+                              <BellRing className="h-4 w-4" />
                               Study Reminders
                             </FormLabel>
                             <FormDescription>
@@ -328,7 +434,8 @@ export default function Settings() {
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">
+                            <FormLabel className="text-base flex items-center gap-2">
+                              <Clock className="h-4 w-4" />
                               Deadline Alerts
                             </FormLabel>
                             <FormDescription>
@@ -368,6 +475,50 @@ export default function Settings() {
                     />
                     <FormField
                       control={notificationsForm.control}
+                      name="weeklyReports"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">
+                              Weekly Study Reports
+                            </FormLabel>
+                            <FormDescription>
+                              Receive weekly email summaries of your study progress.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={notificationsForm.control}
+                      name="inactivityReminders"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base">
+                              Inactivity Reminders
+                            </FormLabel>
+                            <FormDescription>
+                              Get reminders when you haven't studied for a while.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={notificationsForm.control}
                       name="marketingEmails"
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
@@ -393,6 +544,155 @@ export default function Settings() {
                 </Form>
               </div>
             </TabsContent>
+
+            <TabsContent value="timing" className={activeTab === "timing" ? "block" : "hidden"}>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium">Study Timing</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Customize your study session timing preferences.
+                  </p>
+                </div>
+                <Separator />
+                <Form {...studyTimingForm}>
+                  <form onSubmit={studyTimingForm.handleSubmit(onStudyTimingSubmit)} className="space-y-8">
+                    <FormField
+                      control={studyTimingForm.control}
+                      name="defaultSessionLength"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Default Study Session Length (minutes)</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <FormControl>
+                              <Slider
+                                min={5}
+                                max={120}
+                                step={5}
+                                defaultValue={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                className="flex-1"
+                              />
+                            </FormControl>
+                            <span className="w-12 text-center font-medium">{field.value}</span>
+                          </div>
+                          <FormDescription>
+                            The length of your standard study session in minutes.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={studyTimingForm.control}
+                      name="shortBreakLength"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Short Break Length (minutes)</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <FormControl>
+                              <Slider
+                                min={1}
+                                max={30}
+                                step={1}
+                                defaultValue={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                className="flex-1"
+                              />
+                            </FormControl>
+                            <span className="w-12 text-center font-medium">{field.value}</span>
+                          </div>
+                          <FormDescription>
+                            Length of short breaks between study sessions.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={studyTimingForm.control}
+                      name="longBreakLength"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Long Break Length (minutes)</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <FormControl>
+                              <Slider
+                                min={5}
+                                max={60}
+                                step={5}
+                                defaultValue={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                className="flex-1"
+                              />
+                            </FormControl>
+                            <span className="w-12 text-center font-medium">{field.value}</span>
+                          </div>
+                          <FormDescription>
+                            Length of long breaks after multiple study sessions.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={studyTimingForm.control}
+                      name="sessionsBeforeLongBreak"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Sessions Before Long Break</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <FormControl>
+                              <Slider
+                                min={1}
+                                max={10}
+                                step={1}
+                                defaultValue={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                className="flex-1"
+                              />
+                            </FormControl>
+                            <span className="w-12 text-center font-medium">{field.value}</span>
+                          </div>
+                          <FormDescription>
+                            Number of study sessions to complete before a long break.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={studyTimingForm.control}
+                      name="autoStartNextSession"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                          <div className="space-y-0.5">
+                            <FormLabel className="text-base flex items-center gap-2">
+                              <TimerReset className="h-4 w-4" />
+                              Auto-start Next Session
+                            </FormLabel>
+                            <FormDescription>
+                              Automatically start the next study session after a break.
+                            </FormDescription>
+                          </div>
+                          <FormControl>
+                            <Switch
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button type="submit">Save Timing Settings</Button>
+                  </form>
+                </Form>
+              </div>
+            </TabsContent>
             
             <TabsContent value="appearance" className={activeTab === "appearance" ? "block" : "hidden"}>
               <div className="space-y-6">
@@ -411,19 +711,18 @@ export default function Settings() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Theme</FormLabel>
-                          <div className="relative w-max">
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <select
-                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                value={field.value}
-                                onChange={field.onChange}
-                              >
-                                <option value="light">Light</option>
-                                <option value="dark">Dark</option>
-                                <option value="system">System</option>
-                              </select>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a theme" />
+                              </SelectTrigger>
                             </FormControl>
-                          </div>
+                            <SelectContent>
+                              <SelectItem value="light">Light</SelectItem>
+                              <SelectItem value="dark">Dark</SelectItem>
+                              <SelectItem value="system">System</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormDescription>
                             Select the theme for the application.
                           </FormDescription>
@@ -437,19 +736,18 @@ export default function Settings() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>Font Size</FormLabel>
-                          <div className="relative w-max">
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <select
-                                className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                                value={field.value}
-                                onChange={field.onChange}
-                              >
-                                <option value="small">Small</option>
-                                <option value="medium">Medium</option>
-                                <option value="large">Large</option>
-                              </select>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a font size" />
+                              </SelectTrigger>
                             </FormControl>
-                          </div>
+                            <SelectContent>
+                              <SelectItem value="small">Small</SelectItem>
+                              <SelectItem value="medium">Medium</SelectItem>
+                              <SelectItem value="large">Large</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormDescription>
                             Adjust the font size for better readability.
                           </FormDescription>
@@ -472,32 +770,93 @@ export default function Settings() {
                   </p>
                 </div>
                 <Separator />
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium">Change Password</h4>
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Current Password</label>
-                        <Input type="password" />
+                <div className="space-y-6">
+                  <Form {...securityForm}>
+                    <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-8">
+                      <div className="space-y-4">
+                        <h4 className="text-sm font-medium flex items-center gap-2">
+                          <Key className="h-4 w-4" />
+                          Change Password
+                        </h4>
+                        
+                        <FormField
+                          control={securityForm.control}
+                          name="currentPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Current Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={securityForm.control}
+                          name="newPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>New Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" {...field} />
+                              </FormControl>
+                              <FormDescription>
+                                Must be at least 8 characters long.
+                              </FormDescription>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={securityForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Confirm New Password</FormLabel>
+                              <FormControl>
+                                <Input type="password" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">New Password</label>
-                        <Input type="password" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-sm font-medium">Confirm New Password</label>
-                        <Input type="password" />
-                      </div>
-                      <Button>Update Password</Button>
-                    </div>
-                  </div>
+                      <Button type="submit">Update Password</Button>
+                    </form>
+                  </Form>
+                  
                   <Separator />
+                  
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Two-Factor Authentication</h4>
                     <p className="text-xs text-muted-foreground">
                       Add an extra layer of security to your account.
                     </p>
                     <Button variant="outline">Set up 2FA</Button>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Login Sessions</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Manage your active login sessions.
+                    </p>
+                    <div className="space-y-4 mt-4">
+                      <div className="flex items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <div className="text-sm font-medium">Current Session</div>
+                          <div className="text-xs text-muted-foreground">
+                            Started: Today at 12:30 PM • Chrome on Windows
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">Current</div>
+                      </div>
+                      <Button variant="outline" className="w-full">Sign out of all devices</Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -514,19 +873,44 @@ export default function Settings() {
                 <Separator />
                 <div className="space-y-6">
                   <div className="space-y-2">
+                    <h4 className="text-sm font-medium">Study Data</h4>
+                    <p className="text-xs text-muted-foreground">
+                      Manage your study data and usage statistics.
+                    </p>
+                    <div className="space-y-4 mt-4">
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-0.5">
+                          <div className="text-sm font-medium">Data Storage</div>
+                          <div className="text-xs text-muted-foreground">
+                            Your study data is stored locally on your device.
+                          </div>
+                        </div>
+                        <Button variant="outline" size="sm">Clear Data</Button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Separator />
+                  
+                  <div className="space-y-2">
                     <h4 className="text-sm font-medium">Export Data</h4>
                     <p className="text-xs text-muted-foreground">
                       Download a copy of your data from StudyPlanner.
                     </p>
-                    <Button variant="outline">Export Data</Button>
+                    <div className="flex gap-2 mt-4">
+                      <Button variant="outline">Export All Data</Button>
+                      <Button variant="outline">Export Study History</Button>
+                    </div>
                   </div>
+                  
                   <Separator />
+                  
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Delete Account</h4>
                     <p className="text-xs text-muted-foreground">
                       This will permanently delete your account and all associated data.
                     </p>
-                    <Button variant="destructive">Delete Account</Button>
+                    <Button variant="destructive" className="mt-4">Delete Account</Button>
                   </div>
                 </div>
               </div>
