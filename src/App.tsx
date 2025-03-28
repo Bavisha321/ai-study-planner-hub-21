@@ -12,7 +12,6 @@ import Index from "./pages/Index";
 import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import Analytics from "./pages/Analytics";
-import Settings from "./pages/Settings";
 import StudyPlanner from "./pages/StudyPlanner";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -24,7 +23,7 @@ const queryClient = new QueryClient();
 // Create a component to conditionally render the sidebar
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const showSidebar = ['/home', '/courses', '/analytics', '/settings', '/study-planner'].includes(location.pathname);
+  const showSidebar = ['/home', '/courses', '/analytics', '/study-planner'].includes(location.pathname);
   
   return (
     <>
@@ -45,7 +44,6 @@ const WrappedRoutes = () => {
         <Route path="/home" element={<Home />} />
         <Route path="/courses" element={<Courses />} />
         <Route path="/analytics" element={<Analytics />} />
-        <Route path="/settings" element={<Settings />} />
         <Route path="/study-planner" element={<StudyPlanner />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
