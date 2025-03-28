@@ -10,6 +10,7 @@ const DashboardSidebar = () => {
     { icon: Home, label: 'Dashboard', path: '/home' },
     { icon: BookOpen, label: 'Courses', path: '/courses' },
     { icon: BarChart2, label: 'Analytics', path: '/analytics' },
+    { icon: Calendar, label: 'Study Planner', path: '/study-planner' },
     { icon: Settings, label: 'Settings', path: '/settings' },
   ];
   
@@ -42,16 +43,6 @@ const DashboardSidebar = () => {
           })}
         </ul>
       </nav>
-      
-      <div className="p-4 mt-auto border-t border-border/40">
-        <Link
-          to="/study-planner"
-          className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          <Calendar className="h-5 w-5" />
-          <span>Study Planner</span>
-        </Link>
-      </div>
     </div>
   );
 };

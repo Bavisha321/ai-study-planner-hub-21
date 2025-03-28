@@ -13,6 +13,7 @@ import Home from "./pages/Home";
 import Courses from "./pages/Courses";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
+import StudyPlanner from "./pages/StudyPlanner";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import About from "./pages/About";
@@ -45,6 +46,7 @@ const WrappedRoutes = () => {
         <Route path="/courses" element={<Courses />} />
         <Route path="/analytics" element={<Analytics />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/study-planner" element={<StudyPlanner />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/about" element={<About />} />
