@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -103,7 +102,6 @@ export default function Settings() {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
 
-  // Profile form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -121,7 +119,6 @@ export default function Settings() {
     console.log(data);
   }
 
-  // Notifications form
   const notificationsForm = useForm<NotificationsFormValues>({
     resolver: zodResolver(notificationsFormSchema),
     defaultValues: {
@@ -142,7 +139,6 @@ export default function Settings() {
     console.log(data);
   }
 
-  // Appearance form
   const appearanceForm = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
@@ -159,7 +155,6 @@ export default function Settings() {
     console.log(data);
   }
 
-  // Security form
   const securityForm = useForm<SecurityFormValues>({
     resolver: zodResolver(securityFormSchema),
     defaultValues: {
@@ -177,7 +172,6 @@ export default function Settings() {
     console.log(data);
   }
 
-  // Study Timing form
   const studyTimingForm = useForm<StudyTimingFormValues>({
     resolver: zodResolver(studyTimingFormSchema),
     defaultValues: {
@@ -215,68 +209,67 @@ export default function Settings() {
         
         <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
           <aside className="lg:w-1/5">
-            <Tabs
-              defaultValue="profile"
-              className="w-full"
-              value={activeTab}
-              onValueChange={setActiveTab}
-              orientation="vertical"
-            >
-              <TabsList className="grid w-full grid-cols-1 h-auto">
-                <TabsTrigger 
-                  value="profile" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <User className="h-4 w-4" />
-                  <span>Profile</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="account" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <UserCog className="h-4 w-4" />
-                  <span>Account</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="notifications" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <Bell className="h-4 w-4" />
-                  <span>Notifications</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="timing" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <Clock className="h-4 w-4" />
-                  <span>Study Timing</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="appearance" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <Moon className="h-4 w-4" />
-                  <span>Appearance</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="security" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <Lock className="h-4 w-4" />
-                  <span>Security</span>
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="data" 
-                  className="flex items-center justify-start gap-2 px-3 py-2"
-                >
-                  <Database className="h-4 w-4" />
-                  <span>Data</span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
+            <div className="space-y-1">
+              <Button 
+                variant={activeTab === "profile" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("profile")}
+              >
+                <User className="h-4 w-4" />
+                <span>Profile</span>
+              </Button>
+              <Button 
+                variant={activeTab === "account" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("account")}
+              >
+                <UserCog className="h-4 w-4" />
+                <span>Account</span>
+              </Button>
+              <Button 
+                variant={activeTab === "notifications" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("notifications")}
+              >
+                <Bell className="h-4 w-4" />
+                <span>Notifications</span>
+              </Button>
+              <Button 
+                variant={activeTab === "timing" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("timing")}
+              >
+                <Clock className="h-4 w-4" />
+                <span>Study Timing</span>
+              </Button>
+              <Button 
+                variant={activeTab === "appearance" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("appearance")}
+              >
+                <Moon className="h-4 w-4" />
+                <span>Appearance</span>
+              </Button>
+              <Button 
+                variant={activeTab === "security" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("security")}
+              >
+                <Lock className="h-4 w-4" />
+                <span>Security</span>
+              </Button>
+              <Button 
+                variant={activeTab === "data" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("data")}
+              >
+                <Database className="h-4 w-4" />
+                <span>Data</span>
+              </Button>
+            </div>
           </aside>
           <div className="flex-1 lg:max-w-2xl">
-            <TabsContent value="profile" className={activeTab === "profile" ? "block" : "hidden"}>
+            {activeTab === "profile" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Profile</h3>
@@ -339,9 +332,9 @@ export default function Settings() {
                   </form>
                 </Form>
               </div>
-            </TabsContent>
+            )}
             
-            <TabsContent value="account" className={activeTab === "account" ? "block" : "hidden"}>
+            {activeTab === "account" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Account</h3>
@@ -392,9 +385,9 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
-            </TabsContent>
+            )}
             
-            <TabsContent value="notifications" className={activeTab === "notifications" ? "block" : "hidden"}>
+            {activeTab === "notifications" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Notifications</h3>
@@ -543,9 +536,9 @@ export default function Settings() {
                   </form>
                 </Form>
               </div>
-            </TabsContent>
+            )}
 
-            <TabsContent value="timing" className={activeTab === "timing" ? "block" : "hidden"}>
+            {activeTab === "timing" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Study Timing</h3>
@@ -692,9 +685,9 @@ export default function Settings() {
                   </form>
                 </Form>
               </div>
-            </TabsContent>
+            )}
             
-            <TabsContent value="appearance" className={activeTab === "appearance" ? "block" : "hidden"}>
+            {activeTab === "appearance" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Appearance</h3>
@@ -759,9 +752,9 @@ export default function Settings() {
                   </form>
                 </Form>
               </div>
-            </TabsContent>
+            )}
             
-            <TabsContent value="security" className={activeTab === "security" ? "block" : "hidden"}>
+            {activeTab === "security" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Security</h3>
@@ -860,9 +853,9 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
-            </TabsContent>
+            )}
             
-            <TabsContent value="data" className={activeTab === "data" ? "block" : "hidden"}>
+            {activeTab === "data" && (
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium">Data & Privacy</h3>
@@ -914,7 +907,7 @@ export default function Settings() {
                   </div>
                 </div>
               </div>
-            </TabsContent>
+            )}
           </div>
         </div>
       </div>
