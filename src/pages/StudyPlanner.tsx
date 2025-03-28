@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { CalendarClock, Brain, ListTodo, TrendingUp, Plus, Clock, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,16 +41,47 @@ const newSessionSchema = z.object({
 
 type NewSessionFormValues = z.infer<typeof newSessionSchema>;
 
+// Create a type for study sessions
+type StudySession = {
+  id: number;
+  subject: string;
+  topic: string;
+  date: string;
+  time: string;
+  duration: string;
+  priority: string;
+  completed?: boolean;
+};
+
+// Create a local storage key for study sessions
+const STORAGE_KEY = 'study_sessions';
+
+// Get stored sessions from localStorage
+const getStoredSessions = (): StudySession[] => {
+  const storedSessions = localStorage.getItem(STORAGE_KEY);
+  return storedSessions ? JSON.parse(storedSessions) : [];
+};
+
+// Save sessions to localStorage
+const saveSessionsToStorage = (sessions: StudySession[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
+};
+
 const StudyPlanner = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("plan");
+  const [studySessions, setStudySessions] = useState<StudySession[]>(getStoredSessions());
 
-  // Mock data for the study plan
-  const studySessions = [
-    { id: 1, subject: "Mathematics", topic: "Calculus", date: "2023-07-15", time: "10:00", duration: "60", priority: "High" },
-    { id: 2, subject: "Physics", topic: "Mechanics", date: "2023-07-16", time: "14:00", duration: "90", priority: "Medium" },
-    { id: 3, subject: "Computer Science", topic: "Algorithms", date: "2023-07-17", time: "16:00", duration: "120", priority: "Low" },
-  ];
+  // Load sessions from localStorage on component mount
+  useEffect(() => {
+    setStudySessions(getStoredSessions());
+  }, []);
+
+  // Save sessions to localStorage whenever they change
+  useEffect(() => {
+    saveSessionsToStorage(studySessions);
+  }, [studySessions]);
 
   // Form for adding new study sessions
   const form = useForm<NewSessionFormValues>({
@@ -65,12 +97,32 @@ const StudyPlanner = () => {
   });
 
   function onSubmit(data: NewSessionFormValues) {
+    // Create a new session with a unique ID
+    const newSession: StudySession = {
+      id: Date.now(), // Using timestamp as a simple unique ID
+      ...data
+    };
+
+    // Add the new session to the existing sessions
+    const updatedSessions = [...studySessions, newSession];
+    setStudySessions(updatedSessions);
+
+    // Show a success toast
     toast({
       title: "Study session added",
       description: `Added ${data.subject} - ${data.topic} to your study plan.`,
     });
-    console.log(data);
+
+    // Reset the form
+    form.reset();
+
+    // Update localStorage
+    saveSessionsToStorage(updatedSessions);
   }
+
+  const handleViewDashboard = () => {
+    navigate('/home');
+  };
 
   return (
     <motion.div
@@ -80,11 +132,14 @@ const StudyPlanner = () => {
       className="container py-10"
     >
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Study Planner</h1>
-          <p className="text-muted-foreground">
-            Plan, organize, and track your study sessions efficiently.
-          </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Study Planner</h1>
+            <p className="text-muted-foreground">
+              Plan, organize, and track your study sessions efficiently.
+            </p>
+          </div>
+          <Button onClick={handleViewDashboard}>View Dashboard</Button>
         </div>
         <Separator />
         
@@ -318,7 +373,7 @@ const StudyPlanner = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full">View Detailed Report</Button>
+                  <Button variant="outline" className="w-full" onClick={handleViewDashboard}>View Dashboard</Button>
                 </CardFooter>
               </Card>
             </div>
@@ -395,37 +450,43 @@ const StudyPlanner = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-medium">Upcoming Study Sessions</h3>
-                <Button size="sm">
+                <Button size="sm" onClick={() => setActiveTab("plan")}>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Session
                 </Button>
               </div>
               
               <div className="space-y-3">
-                {studySessions.map((session) => (
-                  <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/40 transition-colors">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-2 h-12 rounded-full ${
-                        session.priority === "High" ? "bg-red-500" :
-                        session.priority === "Medium" ? "bg-amber-500" : "bg-green-500"
-                      }`}></div>
-                      <div>
-                        <h4 className="font-medium">{session.subject}</h4>
-                        <p className="text-sm text-muted-foreground">{session.topic}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm">
-                        {new Date(session.date).toLocaleDateString('en-US', {
-                          weekday: 'short', month: 'short', day: 'numeric'
-                        })}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {session.time} · {session.duration} min
-                      </div>
-                    </div>
+                {studySessions.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    No study sessions planned yet. Add your first session!
                   </div>
-                ))}
+                ) : (
+                  studySessions.map((session) => (
+                    <div key={session.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/40 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-2 h-12 rounded-full ${
+                          session.priority === "High" ? "bg-red-500" :
+                          session.priority === "Medium" ? "bg-amber-500" : "bg-green-500"
+                        }`}></div>
+                        <div>
+                          <h4 className="font-medium">{session.subject}</h4>
+                          <p className="text-sm text-muted-foreground">{session.topic}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm">
+                          {new Date(session.date).toLocaleDateString('en-US', {
+                            weekday: 'short', month: 'short', day: 'numeric'
+                          })}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {session.time} · {session.duration} min
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </TabsContent>
