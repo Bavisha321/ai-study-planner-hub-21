@@ -1,10 +1,23 @@
-
 import React, { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Clock, Plus, MoreHorizontal, BookOpen, CheckCircle2, SortAsc, SortDesc, Filter } from "lucide-react";
+import { 
+  Clock, 
+  Plus, 
+  MoreHorizontal, 
+  BookOpen, 
+  CheckCircle2, 
+  SortAsc, 
+  SortDesc, 
+  Filter, 
+  Calendar, 
+  BookMarked, 
+  BarChart, 
+  AlarmClock,
+  X
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { 
   Select,
@@ -36,6 +49,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogClose
+} from "@/components/ui/dialog";
+import { toast } from 'sonner';
 
 interface CourseCard {
   id: string;
@@ -46,6 +68,16 @@ interface CourseCard {
   hours: string;
   level: "Beginner" | "Intermediate" | "Advanced";
   bgColor: string;
+  chapters?: Chapter[];
+  instructor?: string;
+  lastAccessed?: string;
+}
+
+interface Chapter {
+  id: string;
+  title: string;
+  duration: string;
+  completed: boolean;
 }
 
 type SortOption = "title-asc" | "title-desc" | "progress-asc" | "progress-desc";
@@ -57,6 +89,8 @@ const Courses = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOption, setSortOption] = useState<SortOption>("title-asc");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  const [selectedCourse, setSelectedCourse] = useState<CourseCard | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   
   const coursesPerPage = 6;
   
@@ -70,6 +104,14 @@ const Courses = () => {
       hours: "15/40",
       level: "Intermediate",
       bgColor: "bg-blue-50",
+      instructor: "Dr. Alex Smith",
+      lastAccessed: "Yesterday",
+      chapters: [
+        { id: "1-1", title: "Introduction to ML", duration: "1.5 hours", completed: true },
+        { id: "1-2", title: "Linear Regression", duration: "2 hours", completed: true },
+        { id: "1-3", title: "Decision Trees", duration: "2.5 hours", completed: false },
+        { id: "1-4", title: "Neural Networks", duration: "3 hours", completed: false }
+      ]
     },
     {
       id: "2",
@@ -80,6 +122,14 @@ const Courses = () => {
       hours: "20/50",
       level: "Advanced",
       bgColor: "bg-purple-50",
+      instructor: "Prof. Maria Johnson",
+      lastAccessed: "3 days ago",
+      chapters: [
+        { id: "2-1", title: "Limits and Continuity", duration: "2 hours", completed: true },
+        { id: "2-2", title: "Differentiation", duration: "3 hours", completed: true },
+        { id: "2-3", title: "Integration", duration: "3 hours", completed: false },
+        { id: "2-4", title: "Applications", duration: "2 hours", completed: false }
+      ]
     },
     {
       id: "3",
@@ -90,6 +140,11 @@ const Courses = () => {
       hours: "25/30",
       level: "Beginner",
       bgColor: "bg-green-50",
+      chapters: [
+        { id: "3-1", title: "HTML Basics", duration: "1 hour", completed: true },
+        { id: "3-2", title: "CSS Styling", duration: "2 hours", completed: true },
+        { id: "3-3", title: "JavaScript Fundamentals", duration: "3 hours", completed: false }
+      ]
     },
     {
       id: "4",
@@ -100,6 +155,10 @@ const Courses = () => {
       hours: "8/35",
       level: "Beginner",
       bgColor: "bg-yellow-50",
+      chapters: [
+        { id: "4-1", title: "Introduction to Psychology", duration: "2 hours", completed: true },
+        { id: "4-2", title: "Personality Theories", duration: "3 hours", completed: false }
+      ]
     },
     {
       id: "5",
@@ -110,6 +169,11 @@ const Courses = () => {
       hours: "31/50",
       level: "Intermediate",
       bgColor: "bg-green-50",
+      chapters: [
+        { id: "5-1", title: "Arrays and Lists", duration: "1 hour", completed: true },
+        { id: "5-2", title: "Linked Lists", duration: "2 hours", completed: true },
+        { id: "5-3", title: "Trees and Graphs", duration: "3 hours", completed: false }
+      ]
     },
     {
       id: "6",
@@ -120,6 +184,11 @@ const Courses = () => {
       hours: "7/45",
       level: "Intermediate",
       bgColor: "bg-purple-50",
+      chapters: [
+        { id: "6-1", title: "Descriptive Statistics", duration: "1 hour", completed: true },
+        { id: "6-2", title: "Inferential Statistics", duration: "2 hours", completed: true },
+        { id: "6-3", title: "Regression Analysis", duration: "3 hours", completed: false }
+      ]
     },
     {
       id: "7",
@@ -130,34 +199,34 @@ const Courses = () => {
       hours: "27/30",
       level: "Advanced",
       bgColor: "bg-blue-50",
+      chapters: [
+        { id: "7-1", title: "AI Ethics Overview", duration: "1 hour", completed: true },
+        { id: "7-2", title: "Bias and Fairness", duration: "2 hours", completed: true },
+        { id: "7-3", title: "AI in Healthcare", duration: "3 hours", completed: false }
+      ]
     }
   ];
   
-  // Extract unique categories
   const categories = useMemo(() => {
     const uniqueCategories = new Set(courses.map(course => course.category));
     return ["all", ...Array.from(uniqueCategories)];
   }, [courses]);
   
-  // Filter courses based on search query and category
   const filteredCourses = useMemo(() => {
     let filtered = courses;
     
-    // Apply search filter
     filtered = filtered.filter(course => 
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.description.toLowerCase().includes(searchQuery.toLowerCase())
     );
     
-    // Apply category filter
     if (selectedCategory !== "all") {
       filtered = filtered.filter(course => 
         course.category === selectedCategory
       );
     }
     
-    // Apply sorting
     filtered = [...filtered].sort((a, b) => {
       if (sortOption === "title-asc") {
         return a.title.localeCompare(b.title);
@@ -173,7 +242,6 @@ const Courses = () => {
     return filtered;
   }, [courses, searchQuery, selectedCategory, sortOption]);
   
-  // Calculate pagination
   const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
   const indexOfLastCourse = currentPage * coursesPerPage;
   const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
@@ -181,6 +249,16 @@ const Courses = () => {
   
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+  };
+  
+  const handleCourseClick = (course: CourseCard) => {
+    setSelectedCourse(course);
+    setIsDialogOpen(true);
+  };
+  
+  const handleContinueCourse = (e: React.MouseEvent, course: CourseCard) => {
+    e.stopPropagation();
+    toast.success(`Continuing ${course.title}`);
   };
   
   return (
@@ -276,7 +354,11 @@ const Courses = () => {
       {viewMode === "grid" ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentCourses.map((course) => (
-            <Card key={course.id} className={`border overflow-hidden ${course.bgColor} hover:shadow-md transition-shadow`}>
+            <Card 
+              key={course.id} 
+              className={`border overflow-hidden ${course.bgColor} hover:shadow-md transition-shadow cursor-pointer`}
+              onClick={() => handleCourseClick(course)}
+            >
               <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-2">
                   <h2 className="text-xl font-semibold">{course.title}</h2>
@@ -329,7 +411,11 @@ const Courses = () => {
             </TableHeader>
             <TableBody>
               {currentCourses.map((course) => (
-                <TableRow key={course.id}>
+                <TableRow 
+                  key={course.id} 
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => handleCourseClick(course)}
+                >
                   <TableCell className="font-medium">{course.title}</TableCell>
                   <TableCell>{course.category}</TableCell>
                   <TableCell>
@@ -343,7 +429,11 @@ const Courses = () => {
                   </TableCell>
                   <TableCell>{course.hours}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={(e) => handleContinueCourse(e, course)}
+                    >
                       Continue
                     </Button>
                   </TableCell>
@@ -354,7 +444,6 @@ const Courses = () => {
         </div>
       )}
       
-      {/* Pagination */}
       {totalPages > 1 && (
         <Pagination className="mt-8">
           <PaginationContent>
@@ -368,7 +457,6 @@ const Courses = () => {
             {Array.from({ length: totalPages }).map((_, index) => {
               const pageNumber = index + 1;
               
-              // Show current page, first/last page, and one page before/after current
               if (
                 pageNumber === 1 || 
                 pageNumber === totalPages || 
@@ -386,7 +474,6 @@ const Courses = () => {
                 );
               }
               
-              // Show ellipsis for skipped pages
               if (
                 (pageNumber === 2 && currentPage > 3) || 
                 (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
@@ -414,6 +501,98 @@ const Courses = () => {
       <div className="mt-4 text-center text-muted-foreground text-sm">
         Showing {indexOfFirstCourse + 1}-{Math.min(indexOfLastCourse, filteredCourses.length)} of {filteredCourses.length} courses
       </div>
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold flex items-center justify-between">
+              <span>{selectedCourse?.title}</span>
+              <Badge variant="outline" className="font-normal">
+                {selectedCourse?.level}
+              </Badge>
+            </DialogTitle>
+            <DialogDescription>
+              <div className="flex items-center gap-3 mt-2 text-sm text-muted-foreground">
+                <span className="flex items-center">
+                  <BookMarked className="h-4 w-4 mr-1" />
+                  {selectedCourse?.category}
+                </span>
+                <span className="flex items-center">
+                  <Clock className="h-4 w-4 mr-1" />
+                  {selectedCourse?.hours} hours
+                </span>
+                {selectedCourse?.instructor && (
+                  <span className="flex items-center">
+                    <span className="font-medium mr-1">Instructor:</span> {selectedCourse.instructor}
+                  </span>
+                )}
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="mt-4">
+            <p className="mb-6">{selectedCourse?.description}</p>
+            
+            <div className="mb-6">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">Your Progress</h3>
+                <span>{selectedCourse?.progress}%</span>
+              </div>
+              <Progress value={selectedCourse?.progress} className="h-3" />
+              {selectedCourse?.lastAccessed && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  Last accessed: {selectedCourse.lastAccessed}
+                </p>
+              )}
+            </div>
+            
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Course Content</h3>
+              <div className="rounded-md border overflow-hidden">
+                {selectedCourse?.chapters?.map((chapter, index) => (
+                  <div 
+                    key={chapter.id} 
+                    className={`flex items-center justify-between p-3 ${
+                      index % 2 === 0 ? 'bg-muted/50' : ''
+                    } ${
+                      chapter.completed ? 'opacity-70' : ''
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <span className="bg-primary/10 text-primary w-7 h-7 rounded-full flex items-center justify-center mr-3">
+                        {index + 1}
+                      </span>
+                      <div>
+                        <h4 className="font-medium">{chapter.title}</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {chapter.duration}
+                        </p>
+                      </div>
+                    </div>
+                    {chapter.completed ? (
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <Button size="sm" variant="outline">
+                        <AlarmClock className="h-4 w-4 mr-2" />
+                        Start
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="mt-8 flex justify-between">
+              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                Close
+              </Button>
+              <Button>
+                Continue Learning
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
