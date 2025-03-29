@@ -100,7 +100,12 @@ const StudyPlanner = () => {
     // Create a new session with a unique ID
     const newSession: StudySession = {
       id: Date.now(), // Using timestamp as a simple unique ID
-      ...data
+      subject: data.subject,
+      topic: data.topic,
+      duration: data.duration,
+      date: data.date,
+      time: data.time,
+      priority: data.priority
     };
 
     // Add the new session to the existing sessions

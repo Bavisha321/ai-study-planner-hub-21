@@ -58,6 +58,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface CourseCard {
   id: string;
@@ -91,6 +92,7 @@ const Courses = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedCourse, setSelectedCourse] = useState<CourseCard | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const navigate = useNavigate();
   
   const coursesPerPage = 6;
   
@@ -260,6 +262,14 @@ const Courses = () => {
     e.stopPropagation();
     toast.success(`Continuing ${course.title}`);
   };
+
+  const handleStartChapter = (e: React.MouseEvent, chapterId: string, chapterTitle: string) => {
+    e.stopPropagation();
+    
+    navigate('/study-planner');
+    
+    toast.success(`Starting chapter: ${chapterTitle}`);
+  };
   
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -282,7 +292,7 @@ const Courses = () => {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setCurrentPage(1); // Reset to first page on search
+                setCurrentPage(1);
               }}
               className="w-full"
             />
@@ -293,7 +303,7 @@ const Courses = () => {
               value={selectedCategory} 
               onValueChange={(value) => {
                 setSelectedCategory(value);
-                setCurrentPage(1); // Reset to first page on category change
+                setCurrentPage(1);
               }}
             >
               <SelectTrigger className="w-full md:w-[200px]">
@@ -572,7 +582,11 @@ const Courses = () => {
                     {chapter.completed ? (
                       <CheckCircle2 className="h-5 w-5 text-green-500" />
                     ) : (
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={(e) => handleStartChapter(e, chapter.id, chapter.title)}
+                      >
                         <AlarmClock className="h-4 w-4 mr-2" />
                         Start
                       </Button>
@@ -586,7 +600,7 @@ const Courses = () => {
               <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Close
               </Button>
-              <Button>
+              <Button onClick={() => navigate('/study-planner')}>
                 Continue Learning
               </Button>
             </div>
