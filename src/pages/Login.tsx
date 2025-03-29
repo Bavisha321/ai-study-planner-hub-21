@@ -1,12 +1,13 @@
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/PageTransition';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from 'sonner';
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,6 +15,7 @@ const Login = () => {
     email: '',
     password: '',
   });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,7 +29,26 @@ const Login = () => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      console.log('Login attempt with:', formData);
+      
+      // Simple validation
+      if (formData.email && formData.password) {
+        // Store login state
+        localStorage.setItem('userLoggedIn', 'true');
+        
+        // Check if user has seen the about page
+        const hasSeenAbout = localStorage.getItem('hasSeenAbout') === 'true';
+        
+        toast.success('Successfully logged in!');
+        
+        // Navigate to about page first if not seen yet, otherwise go to home
+        if (!hasSeenAbout) {
+          navigate('/about');
+        } else {
+          navigate('/home');
+        }
+      } else {
+        toast.error('Please enter valid credentials');
+      }
     }, 1500);
   };
 

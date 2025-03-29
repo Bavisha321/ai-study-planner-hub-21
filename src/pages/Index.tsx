@@ -1,13 +1,21 @@
 
-import { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/PageTransition';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
+  const navigate = useNavigate();
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
+    // Check if user is logged in - this is a simple check
+    // In a real app, this would be handled by an auth system
+    const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
+    setIsUserLoggedIn(userLoggedIn);
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -29,6 +37,21 @@ const Index = () => {
       }
     };
   }, []);
+
+  const handleGetStarted = () => {
+    if (isUserLoggedIn) {
+      navigate('/home');
+    } else {
+      // Check if user has already visited before
+      const hasVisited = localStorage.getItem('hasVisited') === 'true';
+      if (hasVisited) {
+        navigate('/login');
+      } else {
+        localStorage.setItem('hasVisited', 'true');
+        navigate('/register');
+      }
+    }
+  };
 
   return (
     <PageTransition>
@@ -76,13 +99,20 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
+            className="space-y-4"
           >
-            <Link 
-              to="/home" 
-              className="inline-block px-8 py-4 bg-primary text-primary-foreground rounded-md font-medium transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md"
+            <Button 
+              onClick={handleGetStarted}
+              className="px-8 py-6 bg-primary text-primary-foreground rounded-md font-medium text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md"
             >
               Get Started
-            </Link>
+            </Button>
+            
+            <div className="text-sm text-muted-foreground mt-2">
+              {isUserLoggedIn 
+                ? "Continue your learning journey" 
+                : "New here? Create an account or log in to get started"}
+            </div>
           </motion.div>
         </div>
         

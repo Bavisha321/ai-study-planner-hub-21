@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/PageTransition';
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
+import { toast } from 'sonner';
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -18,6 +19,7 @@ const Register = () => {
     confirmPassword: '',
     agreeTerms: false,
   });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -35,7 +37,24 @@ const Register = () => {
     // Simulate API call
     setTimeout(() => {
       setIsLoading(false);
-      console.log('Register attempt with:', formData);
+      
+      // Simple validation
+      if (formData.password !== formData.confirmPassword) {
+        toast.error('Passwords do not match!');
+        return;
+      }
+      
+      if (formData.name && formData.email && formData.password && formData.agreeTerms) {
+        // Store registration state
+        localStorage.setItem('userLoggedIn', 'true');
+        
+        toast.success('Account created successfully!');
+        
+        // Navigate to about page for instructions
+        navigate('/about');
+      } else {
+        toast.error('Please fill in all required fields');
+      }
     }, 1500);
   };
 
