@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -13,9 +13,11 @@ import {
   Clock,
   BellRing,
   TimerReset,
-  Key
+  Key,
+  Calendar
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -44,6 +46,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 const profileFormSchema = z.object({
   username: z
@@ -92,27 +102,61 @@ const studyTimingFormSchema = z.object({
   autoStartNextSession: z.boolean().default(false),
 });
 
+const examCalendarFormSchema = z.object({
+  examDate: z.date().optional(),
+  examTitle: z.string().min(1, "Exam title is required").optional(),
+});
+
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 type NotificationsFormValues = z.infer<typeof notificationsFormSchema>;
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 type SecurityFormValues = z.infer<typeof securityFormSchema>;
 type StudyTimingFormValues = z.infer<typeof studyTimingFormSchema>;
+type ExamCalendarFormValues = z.infer<typeof examCalendarFormSchema>;
 
 export default function Settings() {
-  const { toast } = useToast();
+  const { toast: hookToast } = useToast();
   const [activeTab, setActiveTab] = useState("profile");
+  const [savedUsername, setSavedUsername] = useState("johndoe");
+  const [markedExamDays, setMarkedExamDays] = useState<{date: Date, title: string}[]>([]);
+  const [selectedExamDate, setSelectedExamDate] = useState<Date | undefined>();
+  const [examTitle, setExamTitle] = useState("");
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setSavedUsername(storedUsername);
+      profileForm.setValue('username', storedUsername);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Notification.permission === "granted" && notificationsForm.getValues().studyReminders) {
+      const demoTimer = setTimeout(() => {
+        toast("Study Reminder", {
+          description: "Remember to complete your daily study goals! 📚",
+          duration: 5000,
+        });
+      }, 5000);
+
+      return () => clearTimeout(demoTimer);
+    }
+  }, []);
 
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
-      username: "johndoe",
+      username: savedUsername,
       email: "john.doe@example.com",
       bio: "Student passionate about learning new things.",
     },
   });
 
   function onProfileSubmit(data: ProfileFormValues) {
-    toast({
+    localStorage.setItem('username', data.username);
+    setSavedUsername(data.username);
+    
+    hookToast({
       title: "Profile updated",
       description: "Your profile information has been updated.",
     });
@@ -132,11 +176,29 @@ export default function Settings() {
   });
 
   function onNotificationsSubmit(data: NotificationsFormValues) {
-    toast({
+    if (data.studyReminders && Notification.permission !== "granted") {
+      Notification.requestPermission().then(permission => {
+        if (permission === "granted") {
+          toast("Notifications enabled", {
+            description: "You will now receive study reminders!",
+          });
+        }
+      });
+    }
+    
+    hookToast({
       title: "Notification preferences saved",
       description: "Your notification settings have been updated.",
     });
     console.log(data);
+    
+    if (data.studyReminders) {
+      setTimeout(() => {
+        toast("Study Reminder", {
+          description: "Time to study! Your scheduled session is starting soon.",
+        });
+      }, 2000);
+    }
   }
 
   const appearanceForm = useForm<AppearanceFormValues>({
@@ -148,7 +210,7 @@ export default function Settings() {
   });
 
   function onAppearanceSubmit(data: AppearanceFormValues) {
-    toast({
+    hookToast({
       title: "Appearance settings saved",
       description: "Your visual preferences have been updated.",
     });
@@ -165,7 +227,7 @@ export default function Settings() {
   });
 
   function onSecuritySubmit(data: SecurityFormValues) {
-    toast({
+    hookToast({
       title: "Password updated",
       description: "Your password has been changed successfully.",
     });
@@ -184,12 +246,49 @@ export default function Settings() {
   });
 
   function onStudyTimingSubmit(data: StudyTimingFormValues) {
-    toast({
+    hookToast({
       title: "Study timing settings saved",
       description: "Your study session timing preferences have been updated.",
     });
     console.log(data);
   }
+
+  const examCalendarForm = useForm<ExamCalendarFormValues>({
+    resolver: zodResolver(examCalendarFormSchema),
+    defaultValues: {
+      examTitle: "",
+    },
+  });
+
+  function onExamCalendarSubmit(data: ExamCalendarFormValues) {
+    if (data.examDate && data.examTitle) {
+      setMarkedExamDays(prev => [
+        ...prev, 
+        { date: data.examDate, title: data.examTitle }
+      ]);
+      
+      examCalendarForm.reset({
+        examDate: undefined,
+        examTitle: "",
+      });
+      
+      setSelectedExamDate(undefined);
+      setExamTitle("");
+      
+      hookToast({
+        title: "Exam added to calendar",
+        description: `${data.examTitle} scheduled for ${format(data.examDate, "PPP")}`,
+      });
+    }
+  }
+
+  const isExamDay = (date: Date) => {
+    return markedExamDays.some(exam => 
+      exam.date.getDate() === date.getDate() && 
+      exam.date.getMonth() === date.getMonth() && 
+      exam.date.getFullYear() === date.getFullYear()
+    );
+  };
 
   return (
     <motion.div
@@ -241,6 +340,14 @@ export default function Settings() {
               >
                 <Clock className="h-4 w-4" />
                 <span>Study Timing</span>
+              </Button>
+              <Button 
+                variant={activeTab === "calendar" ? "secondary" : "ghost"}
+                className="flex items-center justify-start w-full gap-2 px-3"
+                onClick={() => setActiveTab("calendar")}
+              >
+                <Calendar className="h-4 w-4" />
+                <span>Exam Calendar</span>
               </Button>
               <Button 
                 variant={activeTab === "appearance" ? "secondary" : "ghost"}
@@ -538,6 +645,143 @@ export default function Settings() {
               </div>
             )}
 
+            {activeTab === "calendar" && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-medium">Exam Calendar</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Mark your important exam dates on the calendar.
+                  </p>
+                </div>
+                <Separator />
+                
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <div className="space-y-4">
+                    <Form {...examCalendarForm}>
+                      <form onSubmit={examCalendarForm.handleSubmit(onExamCalendarSubmit)} className="space-y-4">
+                        <FormField
+                          control={examCalendarForm.control}
+                          name="examTitle"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Exam Title</FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="e.g., Math Final" 
+                                  {...field} 
+                                  onChange={(e) => {
+                                    field.onChange(e);
+                                    setExamTitle(e.target.value);
+                                  }}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <FormField
+                          control={examCalendarForm.control}
+                          name="examDate"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-col">
+                              <FormLabel>Exam Date</FormLabel>
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <FormControl>
+                                    <Button
+                                      variant="outline"
+                                      className={cn(
+                                        "w-full pl-3 text-left font-normal",
+                                        !field.value && "text-muted-foreground"
+                                      )}
+                                    >
+                                      {field.value ? (
+                                        format(field.value, "PPP")
+                                      ) : (
+                                        <span>Pick a date</span>
+                                      )}
+                                      <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                                    </Button>
+                                  </FormControl>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0" align="start">
+                                  <Calendar
+                                    mode="single"
+                                    selected={field.value}
+                                    onSelect={(date) => {
+                                      field.onChange(date);
+                                      setSelectedExamDate(date);
+                                    }}
+                                    initialFocus
+                                    className="pointer-events-auto"
+                                    modifiers={{ 
+                                      highlighted: markedExamDays.map(exam => exam.date) 
+                                    }}
+                                    modifiersStyles={{
+                                      highlighted: { 
+                                        backgroundColor: "rgba(220, 50, 50, 0.2)",
+                                        fontWeight: "bold"
+                                      }
+                                    }}
+                                  />
+                                </PopoverContent>
+                              </Popover>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        
+                        <Button 
+                          type="submit" 
+                          className="w-full"
+                          disabled={!examTitle || !selectedExamDate}
+                        >
+                          Add Exam
+                        </Button>
+                      </form>
+                    </Form>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div className="font-medium">Upcoming Exams</div>
+                    <div className="rounded-lg border p-4 min-h-[200px] max-h-[300px] overflow-auto">
+                      {markedExamDays.length > 0 ? (
+                        <div className="space-y-2">
+                          {markedExamDays
+                            .sort((a, b) => a.date.getTime() - b.date.getTime())
+                            .map((exam, index) => (
+                              <div key={index} className="flex justify-between items-center p-2 rounded-md hover:bg-muted">
+                                <div>
+                                  <div className="font-medium">{exam.title}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {format(exam.date, "PPP")}
+                                  </div>
+                                </div>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm"
+                                  onClick={() => {
+                                    setMarkedExamDays(prev => prev.filter((_, i) => i !== index));
+                                  }}
+                                >
+                                  Remove
+                                </Button>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-center h-full text-muted-foreground">
+                          No exams scheduled yet
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {activeTab === "timing" && (
               <div className="space-y-6">
                 <div>
