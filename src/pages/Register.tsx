@@ -45,13 +45,10 @@ const Register = () => {
       }
       
       if (formData.name && formData.email && formData.password && formData.agreeTerms) {
-        // Store registration state
-        localStorage.setItem('userLoggedIn', 'true');
-        
         toast.success('Account created successfully!');
         
-        // Navigate to about page for instructions
-        navigate('/about');
+        // Navigate to login page after registration
+        navigate('/login');
       } else {
         toast.error('Please fill in all required fields');
       }

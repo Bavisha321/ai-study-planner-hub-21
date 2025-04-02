@@ -11,8 +11,7 @@ const Index = () => {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in - this is a simple check
-    // In a real app, this would be handled by an auth system
+    // Check if user is logged in
     const userLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
     setIsUserLoggedIn(userLoggedIn);
 

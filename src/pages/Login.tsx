@@ -35,17 +35,10 @@ const Login = () => {
         // Store login state
         localStorage.setItem('userLoggedIn', 'true');
         
-        // Check if user has seen the about page
-        const hasSeenAbout = localStorage.getItem('hasSeenAbout') === 'true';
-        
         toast.success('Successfully logged in!');
         
-        // Navigate to about page first if not seen yet, otherwise go to home
-        if (!hasSeenAbout) {
-          navigate('/about');
-        } else {
-          navigate('/home');
-        }
+        // Navigate directly to home
+        navigate('/home');
       } else {
         toast.error('Please enter valid credentials');
       }

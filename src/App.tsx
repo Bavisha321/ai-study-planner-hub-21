@@ -24,16 +24,10 @@ const queryClient = new QueryClient();
 // Auth guard component to check if user is logged in
 const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
-  const hasSeenAbout = localStorage.getItem('hasSeenAbout') === 'true';
   const location = useLocation();
   
-  if (!isLoggedIn && !['/', '/login', '/register', '/about'].includes(location.pathname)) {
+  if (!isLoggedIn && !['/', '/login', '/register'].includes(location.pathname)) {
     return <Navigate to="/login" replace />;
-  }
-  
-  // If logged in but hasn't seen about page, redirect there first
-  if (isLoggedIn && !hasSeenAbout && location.pathname !== '/about' && location.pathname !== '/') {
-    return <Navigate to="/about" replace />;
   }
   
   return <>{children}</>;
@@ -58,14 +52,6 @@ const AppLayout = ({ children }: { children: React.ReactNode }) => {
 // Wrapper component for routes that need the AppLayout
 const WrappedRoutes = () => {
   const location = useLocation();
-  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
-  
-  useEffect(() => {
-    // Mark about page as seen when visited
-    if (location.pathname === '/about') {
-      localStorage.setItem('hasSeenAbout', 'true');
-    }
-  }, [location.pathname]);
   
   return (
     <AuthGuard>
