@@ -15,7 +15,10 @@ import {
   BellRing,
   TimerReset,
   Key,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  Palette,
+  Type,
+  Settings as SettingsIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { toast } from "sonner";
@@ -84,6 +87,8 @@ const notificationsFormSchema = z.object({
 const appearanceFormSchema = z.object({
   theme: z.enum(["light", "dark", "system"]),
   fontSize: z.enum(["small", "medium", "large"]),
+  fontFamily: z.enum(["default", "serif", "mono"]),
+  background: z.enum(["default", "gradient", "pattern"]),
 });
 
 const securityFormSchema = z.object({
@@ -101,6 +106,7 @@ const studyTimingFormSchema = z.object({
   longBreakLength: z.number().min(5).max(60),
   sessionsBeforeLongBreak: z.number().min(1).max(10),
   autoStartNextSession: z.boolean().default(false),
+  preparationTime: z.number().min(1).max(60),
 });
 
 const examCalendarFormSchema = z.object({
@@ -122,15 +128,75 @@ export default function Settings() {
   const [markedExamDays, setMarkedExamDays] = useState<{date: Date, title: string}[]>([]);
   const [selectedExamDate, setSelectedExamDate] = useState<Date | undefined>();
   const [examTitle, setExamTitle] = useState("");
+  const [currentTheme, setCurrentTheme] = useState<string>("system");
+  const [currentFontSize, setCurrentFontSize] = useState<string>("medium");
+  const [currentFontFamily, setCurrentFontFamily] = useState<string>("default");
+  const [currentBackground, setCurrentBackground] = useState<string>("default");
 
+  // Load saved preferences
   useEffect(() => {
+    // Load username
     const storedUsername = localStorage.getItem('username');
     if (storedUsername) {
       setSavedUsername(storedUsername);
       profileForm.setValue('username', storedUsername);
     }
+
+    // Load appearance settings
+    const storedTheme = localStorage.getItem('theme');
+    if (storedTheme) {
+      setCurrentTheme(storedTheme);
+      appearanceForm.setValue('theme', storedTheme as any);
+    }
+
+    const storedFontSize = localStorage.getItem('fontSize');
+    if (storedFontSize) {
+      setCurrentFontSize(storedFontSize);
+      appearanceForm.setValue('fontSize', storedFontSize as any);
+      document.documentElement.style.fontSize = 
+        storedFontSize === 'small' ? '14px' : 
+        storedFontSize === 'large' ? '18px' : '16px';
+    }
+
+    const storedFontFamily = localStorage.getItem('fontFamily');
+    if (storedFontFamily) {
+      setCurrentFontFamily(storedFontFamily);
+      appearanceForm.setValue('fontFamily', storedFontFamily as any);
+      document.documentElement.style.fontFamily = 
+        storedFontFamily === 'serif' ? 'Georgia, serif' : 
+        storedFontFamily === 'mono' ? 'monospace' : 'system-ui, sans-serif';
+    }
+
+    const storedBackground = localStorage.getItem('background');
+    if (storedBackground) {
+      setCurrentBackground(storedBackground);
+      appearanceForm.setValue('background', storedBackground as any);
+      
+      if (storedBackground === 'gradient') {
+        document.body.className = 'bg-gradient-to-br from-background to-secondary/30';
+      } else if (storedBackground === 'pattern') {
+        document.body.className = 'bg-background bg-[url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23999999\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")]';
+      } else {
+        document.body.className = 'bg-background';
+      }
+    }
+
+    // Load saved exam dates
+    const storedExamDays = localStorage.getItem('examDays');
+    if (storedExamDays) {
+      try {
+        const parsedExamDays = JSON.parse(storedExamDays).map((exam: any) => ({
+          ...exam,
+          date: new Date(exam.date)
+        }));
+        setMarkedExamDays(parsedExamDays);
+      } catch (error) {
+        console.error("Error parsing exam days:", error);
+      }
+    }
   }, []);
 
+  // Demo notification effect
   useEffect(() => {
     if (Notification.permission === "granted" && notificationsForm.getValues().studyReminders) {
       const demoTimer = setTimeout(() => {
@@ -205,17 +271,48 @@ export default function Settings() {
   const appearanceForm = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
     defaultValues: {
-      theme: "system",
-      fontSize: "medium",
+      theme: "system" as any,
+      fontSize: "medium" as any,
+      fontFamily: "default" as any,
+      background: "default" as any,
     },
   });
 
   function onAppearanceSubmit(data: AppearanceFormValues) {
+    // Save theme preference
+    localStorage.setItem('theme', data.theme);
+    setCurrentTheme(data.theme);
+    
+    // Apply font size
+    localStorage.setItem('fontSize', data.fontSize);
+    setCurrentFontSize(data.fontSize);
+    document.documentElement.style.fontSize = 
+      data.fontSize === 'small' ? '14px' : 
+      data.fontSize === 'large' ? '18px' : '16px';
+    
+    // Apply font family
+    localStorage.setItem('fontFamily', data.fontFamily);
+    setCurrentFontFamily(data.fontFamily);
+    document.documentElement.style.fontFamily = 
+      data.fontFamily === 'serif' ? 'Georgia, serif' : 
+      data.fontFamily === 'mono' ? 'monospace' : 'system-ui, sans-serif';
+    
+    // Apply background
+    localStorage.setItem('background', data.background);
+    setCurrentBackground(data.background);
+    
+    if (data.background === 'gradient') {
+      document.body.className = 'bg-gradient-to-br from-background to-secondary/30';
+    } else if (data.background === 'pattern') {
+      document.body.className = 'bg-background bg-[url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23999999\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")]';
+    } else {
+      document.body.className = 'bg-background';
+    }
+    
     hookToast({
       title: "Appearance settings saved",
       description: "Your visual preferences have been updated.",
     });
-    console.log(data);
   }
 
   const securityForm = useForm<SecurityFormValues>({
@@ -243,10 +340,14 @@ export default function Settings() {
       longBreakLength: 15,
       sessionsBeforeLongBreak: 4,
       autoStartNextSession: false,
+      preparationTime: 10, // New field for preparation time
     },
   });
 
   function onStudyTimingSubmit(data: StudyTimingFormValues) {
+    // Save study timing preferences
+    localStorage.setItem('studyTiming', JSON.stringify(data));
+    
     hookToast({
       title: "Study timing settings saved",
       description: "Your study session timing preferences have been updated.",
@@ -263,10 +364,15 @@ export default function Settings() {
 
   function onExamCalendarSubmit(data: ExamCalendarFormValues) {
     if (data.examDate && data.examTitle) {
-      setMarkedExamDays(prev => [
-        ...prev, 
+      const newExamDays = [
+        ...markedExamDays, 
         { date: data.examDate, title: data.examTitle }
-      ]);
+      ];
+      
+      setMarkedExamDays(newExamDays);
+      
+      // Save to localStorage
+      localStorage.setItem('examDays', JSON.stringify(newExamDays));
       
       examCalendarForm.reset({
         examDate: undefined,
@@ -355,7 +461,7 @@ export default function Settings() {
                 className="flex items-center justify-start w-full gap-2 px-3"
                 onClick={() => setActiveTab("appearance")}
               >
-                <Moon className="h-4 w-4" />
+                <Palette className="h-4 w-4" />
                 <span>Appearance</span>
               </Button>
               <Button 
@@ -825,6 +931,33 @@ export default function Settings() {
                     
                     <FormField
                       control={studyTimingForm.control}
+                      name="preparationTime"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Preparation Time (minutes)</FormLabel>
+                          <div className="flex items-center gap-4">
+                            <FormControl>
+                              <Slider
+                                min={1}
+                                max={60}
+                                step={1}
+                                defaultValue={[field.value]}
+                                onValueChange={(value) => field.onChange(value[0])}
+                                className="flex-1"
+                              />
+                            </FormControl>
+                            <span className="w-12 text-center font-medium">{field.value}</span>
+                          </div>
+                          <FormDescription>
+                            Time allocated for preparation before starting a study session.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={studyTimingForm.control}
                       name="shortBreakLength"
                       render={({ field }) => (
                         <FormItem>
@@ -950,7 +1083,10 @@ export default function Settings() {
                       name="theme"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Theme</FormLabel>
+                          <FormLabel className="flex items-center gap-2">
+                            <Moon className="h-4 w-4" />
+                            Theme
+                          </FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -970,12 +1106,16 @@ export default function Settings() {
                         </FormItem>
                       )}
                     />
+                    
                     <FormField
                       control={appearanceForm.control}
                       name="fontSize"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Font Size</FormLabel>
+                          <FormLabel className="flex items-center gap-2">
+                            <Type className="h-4 w-4" />
+                            Font Size
+                          </FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -995,7 +1135,92 @@ export default function Settings() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit">Save preferences</Button>
+                    
+                    <FormField
+                      control={appearanceForm.control}
+                      name="fontFamily"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Type className="h-4 w-4" />
+                            Font Family
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a font family" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="default">System Default</SelectItem>
+                              <SelectItem value="serif">Serif</SelectItem>
+                              <SelectItem value="mono">Monospace</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Choose a font family for the interface.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={appearanceForm.control}
+                      name="background"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Palette className="h-4 w-4" />
+                            Background Style
+                          </FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a background style" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="default">Solid Color</SelectItem>
+                              <SelectItem value="gradient">Gradient</SelectItem>
+                              <SelectItem value="pattern">Subtle Pattern</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormDescription>
+                            Choose a background style for the application.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <div className="pt-4">
+                      <div className="text-sm font-medium mb-2">Preview</div>
+                      <div className={cn(
+                        "rounded-lg border p-6 text-center",
+                        currentBackground === 'gradient' ? 'bg-gradient-to-br from-background to-secondary/30' :
+                        currentBackground === 'pattern' ? 'bg-background bg-[url("data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23999999\' fill-opacity=\'0.05\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'3\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'3\'/%3E%3C/g%3E%3C/svg%3E")]' :
+                        'bg-background'
+                      )}>
+                        <div className={cn(
+                          "text-foreground",
+                          currentFontFamily === 'serif' ? 'font-serif' : 
+                          currentFontFamily === 'mono' ? 'font-mono' : 
+                          'font-sans',
+                          currentFontSize === 'small' ? 'text-sm' : 
+                          currentFontSize === 'large' ? 'text-lg' : 
+                          'text-base'
+                        )}>
+                          This is how your text will appear
+                        </div>
+                        <div className="flex justify-center gap-2 mt-4">
+                          <Button size="sm" variant="default">Primary</Button>
+                          <Button size="sm" variant="outline">Secondary</Button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <Button type="submit">Save appearance settings</Button>
                   </form>
                 </Form>
               </div>
