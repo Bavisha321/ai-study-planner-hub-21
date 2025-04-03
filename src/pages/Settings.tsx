@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -14,10 +15,10 @@ import {
   BellRing,
   TimerReset,
   Key,
-  Calendar
+  Calendar as CalendarIcon
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -346,7 +347,7 @@ export default function Settings() {
                 className="flex items-center justify-start w-full gap-2 px-3"
                 onClick={() => setActiveTab("calendar")}
               >
-                <Calendar className="h-4 w-4" />
+                <CalendarIcon className="h-4 w-4" />
                 <span>Exam Calendar</span>
               </Button>
               <Button 
@@ -701,7 +702,7 @@ export default function Settings() {
                                       ) : (
                                         <span>Pick a date</span>
                                       )}
-                                      <Calendar className="ml-auto h-4 w-4 opacity-50" />
+                                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                                     </Button>
                                   </FormControl>
                                 </PopoverTrigger>
@@ -710,8 +711,10 @@ export default function Settings() {
                                     mode="single"
                                     selected={field.value}
                                     onSelect={(date) => {
-                                      field.onChange(date);
-                                      setSelectedExamDate(date);
+                                      if (date) {
+                                        field.onChange(date);
+                                        setSelectedExamDate(date);
+                                      }
                                     }}
                                     initialFocus
                                     className="pointer-events-auto"
