@@ -111,8 +111,18 @@ const Home = () => {
 
   return (
     <PageTransition>
-      <div className="min-h-screen pt-20 pb-12 px-6 md:px-12">
-        <div className="max-w-6xl mx-auto">
+      {/* Enhanced background with layered design */}
+      <div className="min-h-screen pt-20 pb-12 px-6 md:px-12 relative overflow-hidden">
+        {/* Abstract background elements */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 -z-10" />
+        <div className="absolute top-0 right-0 h-[40vh] w-[40vh] rounded-full bg-gradient-to-br from-purple-200/30 to-blue-300/20 blur-3xl -z-10" />
+        <div className="absolute bottom-0 left-0 h-[30vh] w-[30vh] rounded-full bg-gradient-to-tl from-blue-200/20 to-indigo-300/20 blur-3xl -z-10" />
+        <div className="absolute top-[25%] left-[15%] h-[20vh] w-[20vh] rounded-full bg-yellow-200/20 blur-3xl -z-10" />
+        
+        {/* Subtle animated pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAiPjxwYXRoIGQ9Ik0zNiAxOGMxLjIzIDAgMi4xOTgtLjk2OCAyLjE5OC0yLjE5NlYzLjE5NkMzOC4xOTggMS45NjggMzcuMjMgMSAzNiAxYy0xLjIzIDAtMi4xOTYuOTY4LTIuMTk2IDIuMTk2djEyLjYwOEMzMy44MDQgMTcuMDMyIDM0Ljc3IDE4IDM2IDE4em0wIDQyYzEuMjMgMCAyLjE5OC0uOTY4IDIuMTk4LTIuMTk2di0xMi42MWMwLTEuMjI4LS45NjgtMi4xOTYtMi4xOTgtMi4xOTYtMS4yMyAwLTIuMTk2Ljk2OC0yLjE5NiAyLjE5NnYxMi42MWMwIDEuMjI4Ljk2NiAyLjE5NiAyLjE5NiAyLjE5NnpNNTkgMzZjMC0xLjIzLS45NjgtMi4xOTgtMi4xOTYtMi4xOThINDQuMTk2QzQyLjk2OCAzMy44MDIgNDIgMzQuNzcgNDIgMzZjMCAxLjIzLjk2OCAyLjE5NiAyLjE5NiAyLjE5NmgxMi42MDhjMS4yMjggMCAyLjE5Ni0uOTY2IDIuMTk2LTIuMTk2ek0xNSAzNmMwLTEuMjMtLjk2Ny0yLjE5OC0yLjE5Ni0yLjE5OEguMTk2Yy0xLjIyOCAwLTIuMTk2Ljk2OC0yLjE5NiAyLjE5OCAwIDEuMjMuOTY4IDIuMTk2IDIuMTk2IDIuMTk2aDEyLjYwOGMxLjIzIDAgMi4xOTYtLjk2NiAyLjE5Ni0yLjE5NnoiLz48L2c+PC9nPjwvc3ZnPg==')]" />
+
+        <div className="max-w-6xl mx-auto relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,15 +130,15 @@ const Home = () => {
             className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8"
           >
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold">Study Dashboard</h1>
+              <h1 className="text-3xl md:text-4xl font-bold bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-500 text-transparent">Study Dashboard</h1>
               <p className="text-muted-foreground mt-1">View and manage your study plans and sessions</p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
-              <Button variant="outline" className="flex items-center gap-2" onClick={handleAddSession}>
+              <Button variant="outline" className="flex items-center gap-2 hover:bg-blue-50" onClick={handleAddSession}>
                 <Plus className="h-4 w-4" />
                 <span>Add Session</span>
               </Button>
-              <Button className="flex items-center gap-2" onClick={handleCreatePlan}>
+              <Button className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md shadow-blue-500/20" onClick={handleCreatePlan}>
                 Create Plan
               </Button>
             </div>
@@ -142,21 +152,28 @@ const Home = () => {
             className="mb-10"
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Upcoming Study Sessions</h2>
-              <Button variant="outline" size="sm" onClick={handleAddSession}>
+              <h2 className="text-xl font-bold flex items-center">
+                <span className="bg-blue-100 text-blue-700 p-1.5 rounded-md mr-2">
+                  <Calendar className="h-5 w-5" />
+                </span>
+                Upcoming Study Sessions
+              </h2>
+              <Button variant="outline" size="sm" onClick={handleAddSession} className="hover:bg-blue-50 hover:text-blue-600">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Session
               </Button>
             </div>
             
             {studySessions.length === 0 ? (
-              <Card>
+              <Card className="border-dashed border-2 bg-white/60 backdrop-blur-sm shadow-sm">
                 <CardContent className="py-10">
                   <div className="text-center">
-                    <ListTodo className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <ListTodo className="h-8 w-8 text-blue-500" />
+                    </div>
                     <h3 className="text-lg font-medium mb-2">No Study Sessions Planned</h3>
                     <p className="text-muted-foreground mb-6">Start planning your study sessions to track your progress</p>
-                    <Button onClick={handleAddSession}>
+                    <Button onClick={handleAddSession} className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-md shadow-blue-500/20">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Your First Session
                     </Button>
@@ -166,7 +183,7 @@ const Home = () => {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {studySessions.slice(0, 4).map((session) => (
-                  <Card key={session.id} className="overflow-hidden">
+                  <Card key={session.id} className="overflow-hidden hover:shadow-md transition-shadow duration-300 bg-white/80 backdrop-blur-sm">
                     <div className="flex">
                       <div 
                         className={`w-2 ${
@@ -214,14 +231,14 @@ const Home = () => {
             
             {studySessions.length > 4 && (
               <div className="text-center mt-4">
-                <Button variant="outline" onClick={() => navigate('/study-planner')}>
+                <Button variant="outline" onClick={() => navigate('/study-planner')} className="hover:bg-blue-50 hover:text-blue-600">
                   View All Sessions
                 </Button>
               </div>
             )}
           </motion.div>
 
-          <Separator className="my-8" />
+          <Separator className="my-8 opacity-50" />
 
           {/* Study Summary Section */}
           {studySessions.length > 0 && (
@@ -231,48 +248,53 @@ const Home = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="mb-10"
             >
-              <h2 className="text-xl font-bold mb-4">Study Summary</h2>
-              <Card>
+              <h2 className="text-xl font-bold mb-4 flex items-center">
+                <span className="bg-indigo-100 text-indigo-700 p-1.5 rounded-md mr-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                </span>
+                Study Summary
+              </h2>
+              <Card className="bg-gradient-to-br from-white to-blue-50 shadow-md border-0">
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Total Study Time</h3>
-                      <div className="text-3xl font-bold">{totalHours} hours</div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <h3 className="text-lg font-medium mb-2 text-blue-800">Total Study Time</h3>
+                      <div className="text-3xl font-bold text-blue-600">{totalHours} hours</div>
                       <p className="text-sm text-muted-foreground">Across all subjects</p>
                     </div>
                     
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Total Sessions</h3>
-                      <div className="text-3xl font-bold">{studySessions.length}</div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <h3 className="text-lg font-medium mb-2 text-indigo-800">Total Sessions</h3>
+                      <div className="text-3xl font-bold text-indigo-600">{studySessions.length}</div>
                       <p className="text-sm text-muted-foreground">Planned study sessions</p>
                     </div>
                     
-                    <div>
-                      <h3 className="text-lg font-medium mb-2">Subjects</h3>
-                      <div className="text-3xl font-bold">{Object.keys(sessionsBySubject).length}</div>
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                      <h3 className="text-lg font-medium mb-2 text-violet-800">Subjects</h3>
+                      <div className="text-3xl font-bold text-violet-600">{Object.keys(sessionsBySubject).length}</div>
                       <p className="text-sm text-muted-foreground">Different subjects to study</p>
                     </div>
                   </div>
                   
-                  <Separator className="my-6" />
+                  <Separator className="my-6 opacity-50" />
                   
                   <h3 className="text-lg font-medium mb-4">Hours by Subject</h3>
                   <div className="space-y-4">
                     {subjectHours.map(({ subject, hours, sessions }) => (
                       <div key={subject} className="space-y-2">
                         <div className="flex justify-between">
-                          <span className="text-muted-foreground">{subject}</span>
+                          <span className="font-medium text-slate-700">{subject}</span>
                           <span className="font-medium">{hours} hours ({sessions} sessions)</span>
                         </div>
-                        <div className="w-full bg-secondary h-2 rounded-full">
+                        <div className="w-full bg-secondary/50 h-2.5 rounded-full">
                           <div 
-                            className="h-2 rounded-full" 
+                            className="h-2.5 rounded-full" 
                             style={{ 
                               width: `${Math.min((hours / totalHours) * 100, 100)}%`,
-                              backgroundColor: subject === 'Mathematics' ? 'rgb(59, 130, 246)' : 
-                                              subject === 'Physics' ? 'rgb(168, 85, 247)' : 
-                                              subject === 'Computer Science' ? 'rgb(34, 197, 94)' : 
-                                              'rgb(249, 115, 22)'
+                              background: subject === 'Mathematics' ? 'linear-gradient(90deg, #3b82f6, #60a5fa)' : 
+                                         subject === 'Physics' ? 'linear-gradient(90deg, #a855f7, #c084fc)' : 
+                                         subject === 'Computer Science' ? 'linear-gradient(90deg, #22c55e, #4ade80)' : 
+                                         'linear-gradient(90deg, #f97316, #fb923c)'
                             }}
                           ></div>
                         </div>
@@ -284,7 +306,7 @@ const Home = () => {
             </motion.div>
           )}
 
-          <Separator className="my-8" />
+          <Separator className="my-8 opacity-50" />
 
           {/* Study Plans Section */}
           <motion.div 
@@ -294,15 +316,15 @@ const Home = () => {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             {studyPlans.map((plan, index) => (
-              <Card key={index} className="overflow-hidden border border-border/50">
-                <CardHeader className="pb-2 flex flex-row justify-between items-start">
+              <Card key={index} className="overflow-hidden border-0 shadow-md bg-white/70 backdrop-blur-sm hover:shadow-lg transition-all">
+                <CardHeader className="pb-2 flex flex-row justify-between items-start bg-gradient-to-r from-blue-50 to-indigo-50">
                   <div>
                     <CardTitle className="text-xl font-bold">{plan.title}</CardTitle>
                     <CardDescription className="text-base mt-1">
                       {plan.description}
                     </CardDescription>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 hover:bg-blue-100">
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 </CardHeader>
@@ -321,7 +343,7 @@ const Home = () => {
                     <p className="text-sm text-muted-foreground mb-2">Courses</p>
                     <div className="flex flex-wrap gap-2">
                       {plan.courses.map((course, idx) => (
-                        <Badge key={idx} variant="secondary" className="font-normal">
+                        <Badge key={idx} variant="secondary" className="font-normal bg-blue-50 text-blue-700 hover:bg-blue-100">
                           {course}
                         </Badge>
                       ))}
@@ -329,7 +351,7 @@ const Home = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full flex gap-2 items-center">
+                  <Button variant="outline" className="w-full flex gap-2 items-center hover:bg-blue-50 hover:text-blue-600">
                     <Calendar className="h-4 w-4" />
                     View Schedule
                   </Button>
@@ -345,7 +367,7 @@ const Home = () => {
             transition={{ duration: 0.5, delay: 0.6 }}
           >
             <Button 
-              className="px-8 py-6 bg-primary text-primary-foreground rounded-md font-medium transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md"
+              className="px-8 py-6 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg shadow-blue-500/30 rounded-xl font-medium transition-all transform hover:translate-y-[-2px] active:translate-y-0 active:shadow-md"
               onClick={handleCreatePlan}
               disabled={isLoading}
               size="lg"
