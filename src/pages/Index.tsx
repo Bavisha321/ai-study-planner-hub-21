@@ -96,19 +96,38 @@ const Index = () => {
   return (
     <PageTransition>
       <div className="min-h-screen relative flex flex-col items-center justify-start overflow-hidden">
-        {/* Hero section with improved visuals */}
+        {/* Hero section with improved background */}
         <div className="w-full relative h-[85vh] flex flex-col items-center justify-center px-6 md:px-12">
-          {/* Background elements */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/20 -z-10" />
+          {/* Enhanced animated background elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-background to-blue-50 -z-10" />
           
-          {/* Decorative circles */}
-          <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-secondary/20 rounded-full blur-2xl animate-pulse" />
+          {/* Decorative background patterns */}
+          <div className="absolute inset-0 bg-pattern-grid opacity-40 -z-5" />
           
-          {/* Mesh gradient overlay */}
-          <div className="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-
+          {/* Animated gradient orbs */}
+          <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-purple-200 to-blue-200 rounded-full blur-3xl animate-pulse-soft -z-5" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-blue-200 to-purple-100 rounded-full blur-3xl -z-5" />
+          <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-gradient-to-br from-yellow-100 to-green-100 rounded-full blur-2xl animate-float -z-5" />
+          
+          {/* Additional animated elements */}
+          <motion.div
+            className="absolute w-20 h-20 rounded-full bg-blue-200 opacity-40 top-1/4 left-1/5"
+            animate={{
+              y: [0, -20, 0],
+              opacity: [0.4, 0.6, 0.4],
+            }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+          
+          <motion.div
+            className="absolute w-12 h-12 rounded-full bg-purple-200 opacity-30 bottom-1/4 right-1/3"
+            animate={{
+              y: [0, 15, 0],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          />
+          
           <div className="max-w-4xl mx-auto text-center z-10">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -128,7 +147,9 @@ const Index = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              Master Your <span className="text-gradient">Learning Journey</span> With AI
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-blue-500 to-emerald-400">
+                AI POWERED PERSONALIZED LEARNING STUDY PLANNER
+              </span>
             </motion.h1>
             
             <motion.p 
@@ -150,7 +171,7 @@ const Index = () => {
               <Button 
                 onClick={handleGetStarted}
                 size="lg"
-                className="px-8 py-6 bg-primary text-primary-foreground rounded-full font-medium text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md flex items-center gap-2"
+                className="px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-medium text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md flex items-center gap-2 btn-pulse"
               >
                 Get Started
                 <ChevronRight className="w-5 h-5" />
@@ -160,7 +181,7 @@ const Index = () => {
                 variant="outline" 
                 size="lg"
                 onClick={() => navigate('/about')}
-                className="px-8 py-6 rounded-full font-medium text-lg border-primary/20 hover:bg-primary/5"
+                className="px-8 py-6 rounded-full font-medium text-lg border-primary/20 hover:bg-primary/5 backdrop-blur-sm glass-morphism"
               >
                 Learn More
               </Button>
