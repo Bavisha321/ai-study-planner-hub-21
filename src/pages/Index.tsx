@@ -1,9 +1,27 @@
 
 import { useEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ArrowDown, BookOpen, Brain, Calendar, ChevronRight, Sparkles } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+
+const FeatureCard = ({ icon: Icon, title, description, delay = 0 }) => (
+  <motion.div 
+    className="relative p-6 rounded-xl backdrop-blur-md bg-background/40 border border-primary/10 shadow-lg overflow-hidden"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay }}
+  >
+    <div className="absolute -right-4 -top-4 w-20 h-20 bg-primary/5 rounded-full blur-2xl" />
+    <div className="mb-4 p-3 rounded-lg bg-primary/10 w-fit">
+      <Icon className="w-6 h-6 text-primary" />
+    </div>
+    <h3 className="text-lg font-bold mb-2">{title}</h3>
+    <p className="text-muted-foreground text-sm">{description}</p>
+  </motion.div>
+);
 
 const Index = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -52,94 +70,178 @@ const Index = () => {
     }
   };
 
+  const features = [
+    {
+      icon: Brain,
+      title: "AI Learning Paths",
+      description: "Personalized study plans that adapt to your learning style and pace"
+    },
+    {
+      icon: Calendar,
+      title: "Smart Scheduling",
+      description: "Optimized study sessions that fit your availability and energy levels"
+    },
+    {
+      icon: BookOpen,
+      title: "Comprehensive Tracking",
+      description: "Monitor progress across subjects with detailed analytics"
+    },
+    {
+      icon: Sparkles,
+      title: "Adaptive Recommendations",
+      description: "Get resource suggestions tailored to your learning goals"
+    }
+  ];
+
   return (
     <PageTransition>
-      <div className="min-h-screen relative flex flex-col items-center justify-center px-6 md:px-12 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-secondary to-background -z-10"></div>
-        
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/5 rounded-full blur-3xl"></div>
-        
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h2 className="text-sm md:text-base tracking-widest uppercase text-muted-foreground mb-4">
-              Elevate Your Learning Experience
-            </h2>
-          </motion.div>
+      <div className="min-h-screen relative flex flex-col items-center justify-start overflow-hidden">
+        {/* Hero section with improved visuals */}
+        <div className="w-full relative h-[85vh] flex flex-col items-center justify-center px-6 md:px-12">
+          {/* Background elements */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/20 -z-10" />
           
-          <motion.h1 
-            ref={titleRef}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-          >
-            AI POWERED <br />
-            <span className="text-gradient">PERSONALIZED LEARNING</span> <br />
-            STUDY PLANNER
-          </motion.h1>
+          {/* Decorative circles */}
+          <div className="absolute top-20 left-10 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-secondary/20 rounded-full blur-2xl animate-pulse" />
           
-          <motion.p 
-            className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            Optimize your learning journey with personalized study plans, adaptive schedules, and intelligent recommendations.
-          </motion.p>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
-            className="space-y-4"
-          >
-            <Button 
-              onClick={handleGetStarted}
-              className="px-8 py-6 bg-primary text-primary-foreground rounded-md font-medium text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md"
+          {/* Mesh gradient overlay */}
+          <div className="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+
+          <div className="max-w-4xl mx-auto text-center z-10">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              Get Started
-            </Button>
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 backdrop-blur-md border border-primary/20 text-sm tracking-wider mb-6">
+                <Sparkles className="w-4 h-4" />
+                <span>AI-Powered Learning Assistant</span>
+              </div>
+            </motion.div>
             
-            <div className="text-sm text-muted-foreground mt-2">
-              {isUserLoggedIn 
-                ? "Continue your learning journey" 
-                : "New here? Create an account or log in to get started"}
-            </div>
-          </motion.div>
-        </div>
-        
-        <motion.div 
-          className="absolute bottom-8 w-full flex justify-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-        >
-          <div className="animate-bounce">
-            <svg 
-              width="24" 
-              height="24" 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-muted-foreground"
+            <motion.h1 
+              ref={titleRef}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <path 
-                d="M12 5V19M12 19L19 12M12 19L5 12" 
-                stroke="currentColor" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-              />
-            </svg>
+              Master Your <span className="text-gradient">Learning Journey</span> With AI
+            </motion.h1>
+            
+            <motion.p 
+              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+            >
+              Accelerate your academic success with personalized study plans, intelligent scheduling, 
+              and AI recommendations tailored to your unique learning style.
+            </motion.p>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.8 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            >
+              <Button 
+                onClick={handleGetStarted}
+                size="lg"
+                className="px-8 py-6 bg-primary text-primary-foreground rounded-full font-medium text-lg transition-all transform hover:translate-y-[-2px] hover:shadow-lg active:translate-y-0 active:shadow-md flex items-center gap-2"
+              >
+                Get Started
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => navigate('/about')}
+                className="px-8 py-6 rounded-full font-medium text-lg border-primary/20 hover:bg-primary/5"
+              >
+                Learn More
+              </Button>
+              
+              <div className="hidden sm:block absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                <motion.div 
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="text-primary/60"
+                >
+                  <ArrowDown className="w-6 h-6" />
+                </motion.div>
+              </div>
+            </motion.div>
           </div>
-        </motion.div>
+        </div>
+
+        {/* Features section */}
+        <div className="w-full bg-gradient-to-b from-background to-secondary/20 py-24 px-6 md:px-12">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <motion.h2 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                viewport={{ once: true }}
+                className="text-3xl md:text-4xl font-bold mb-4"
+              >
+                Why Choose Our <span className="text-gradient">Study Planner</span>
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                viewport={{ once: true }}
+                className="text-muted-foreground max-w-2xl mx-auto"
+              >
+                Our AI-powered platform is designed to optimize your learning experience with features 
+                that adapt to your unique needs and goals.
+              </motion.p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {features.map((feature, index) => (
+                <FeatureCard
+                  key={index}
+                  icon={feature.icon}
+                  title={feature.title}
+                  description={feature.description}
+                  delay={0.2 + index * 0.1}
+                />
+              ))}
+            </div>
+
+            <motion.div 
+              className={cn(
+                "mt-16 text-center",
+                "flex flex-col items-center justify-center gap-2"
+              )}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <p className="text-muted-foreground mb-4">Ready to transform your learning experience?</p>
+              <Button 
+                onClick={handleGetStarted}
+                size="lg"
+                className="px-8 py-6 bg-primary text-primary-foreground rounded-full font-medium text-lg"
+              >
+                Start Your Journey
+              </Button>
+              
+              <div className="text-sm text-muted-foreground mt-2">
+                {isUserLoggedIn 
+                  ? "Continue your learning journey" 
+                  : "New here? Create an account or log in to get started"}
+              </div>
+            </motion.div>
+          </div>
+        </div>
       </div>
     </PageTransition>
   );
