@@ -37,12 +37,13 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const showSidebar = ['/home', '/courses', '/analytics', '/study-planner', '/settings'].includes(location.pathname);
+  const isDashboardPage = ['/home', '/courses', '/analytics', '/study-planner', '/settings'].includes(location.pathname);
   
   return (
     <>
       <NavigationBar />
       {showSidebar && <DashboardSidebar />}
-      <div className={showSidebar ? "md:pl-60" : ""}>
+      <div className={`${showSidebar ? "md:pl-60" : ""} ${isDashboardPage ? "bg-pattern-circuit min-h-screen" : ""}`}>
         {children}
       </div>
     </>
