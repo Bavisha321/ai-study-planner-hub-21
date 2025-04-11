@@ -54,7 +54,19 @@ const TabsContent = React.forwardRef<
           // Find the first heading element in the content and scroll to it
           const headingElements = contentRef.current.querySelectorAll('h1, h2, h3, h4, h5, h6');
           if (headingElements.length > 0) {
-            headingElements[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Add a small delay to ensure DOM is ready
+            setTimeout(() => {
+              // Calculate offset for header height (adjust the 80px value as needed based on your header height)
+              const headerOffset = 80;
+              const elementPosition = headingElements[0].getBoundingClientRect().top;
+              const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+              
+              // Scroll with offset to ensure the heading is visible below the fixed header
+              window.scrollTo({
+                top: offsetPosition,
+                behavior: "smooth"
+              });
+            }, 100);
           }
         } else if (!isCurrentActive && isActive) {
           setIsActive(false);
