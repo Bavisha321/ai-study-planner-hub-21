@@ -11,19 +11,20 @@ import {
   Activity
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import { format, parseISO } from "date-fns";
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState("7days");
   
-  // Mock data for the daily study hours chart
+  // New mock data for the daily study hours chart using ISO date strings
   const dailyData = [
-    { day: 'Mon', hours: 2.5 },
-    { day: 'Tue', hours: 3.0 },
-    { day: 'Wed', hours: 1.5 },
-    { day: 'Thu', hours: 4.0 },
-    { day: 'Fri', hours: 2.0 },
-    { day: 'Sat', hours: 1.0 },
-    { day: 'Sun', hours: 2.0 },
+    { date: '2024-04-15', hours: 2.5 },
+    { date: '2024-04-16', hours: 3.0 },
+    { date: '2024-04-17', hours: 1.5 },
+    { date: '2024-04-18', hours: 4.0 },
+    { date: '2024-04-19', hours: 2.0 },
+    { date: '2024-04-20', hours: 1.0 },
+    { date: '2024-04-21', hours: 2.0 },
   ];
 
   return (
@@ -129,7 +130,11 @@ const Analytics = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={dailyData} margin={{ top: 5, right: 20, bottom: 20, left: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="day" />
+                    <XAxis 
+                      dataKey="date" 
+                      tickFormatter={(dateStr) => format(parseISO(dateStr), "MMM d")} 
+                      label={{ value: 'Date', position: 'insideBottom', offset: -8 }}
+                    />
                     <YAxis label={{ value: 'Hours', angle: -90, position: 'insideLeft' }} />
                     <Bar dataKey="hours" fill="#9b87f5" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -164,3 +169,4 @@ const Analytics = () => {
 };
 
 export default Analytics;
+
