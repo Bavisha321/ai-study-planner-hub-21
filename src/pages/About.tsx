@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bookmark, Calendar, Clock, LineChart, BookOpen, CheckCircle, Star, FileChart } from 'lucide-react';
+import { ArrowRight, Bookmark, Calendar, Clock, LineChart, BookOpen, CheckCircle, Star, FileText } from 'lucide-react';
 
 const About = () => {
   const navigate = useNavigate();
@@ -169,7 +169,7 @@ const About = () => {
                 size="lg" 
                 className="px-8 py-6 text-lg group"
               >
-                <FileChart className="mr-2 h-5 w-5" />
+                <FileText className="mr-2 h-5 w-5" />
                 View Research Report
               </Button>
             </div>
