@@ -1,212 +1,34 @@
-
-import { motion } from 'framer-motion';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import PageTransition from '@/components/PageTransition';
 import { Separator } from "@/components/ui/separator";
 import { 
   BookOpen, 
   Brain, 
-  Calendar, 
   ChartPie, 
-  FileText, 
-  LineChart,
-  GraduationCap,
-  Award,
-  Clock,
-  Code,
-  ListOrdered,
+  FileSearch,
+  FileText,
   Settings,
-  FileCode,
-  FileSearch
 } from 'lucide-react';
+
+import TitleSection from '@/components/Reports/TitleSection';
+import CertificateSection from '@/components/Reports/CertificateSection';
+import TableOfContents from '@/components/Reports/TableOfContents';
+import ListsSection from '@/components/Reports/ListsSection';
+import ReportSection from '@/components/Reports/ReportSection';
 
 const Reports = () => {
   return (
     <PageTransition>
       <div className="min-h-screen pt-20 pb-12 px-6 md:px-12">
         <div className="max-w-6xl mx-auto">
-          {/* Title Page */}
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">AI-Powered Personalized Learning Study Planner</h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              A comprehensive report on our AI-driven study planning system
-            </p>
-            <p className="mt-4 text-muted-foreground">
-              Prepared by: Research Team<br />
-              Date: April 2025
-            </p>
-          </motion.div>
-
-          {/* Certificate */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-12"
-          >
-            <Card>
-              <CardHeader className="text-center">
-                <div className="flex justify-center items-center gap-3 mb-2">
-                  <FileText className="h-8 w-8 text-primary" />
-                </div>
-                <CardTitle className="text-2xl">Certificate</CardTitle>
-              </CardHeader>
-              <CardContent className="prose prose-slate max-w-none text-center">
-                <p>
-                  This is to certify that the report entitled "AI-Powered Personalized Learning Study Planner" 
-                  represents original research conducted by our team. All sources used have been properly cited 
-                  and acknowledged.
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
+          <TitleSection />
+          <CertificateSection />
           <Separator className="my-12" />
-
-          {/* List of Contents */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mb-12"
-          >
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <ListOrdered className="h-6 w-6 text-primary" />
-                  <CardTitle className="text-2xl">List of Contents</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="prose prose-slate max-w-none">
-                <ol className="list-decimal pl-5 space-y-1">
-                  <li>Introduction
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Purpose</li>
-                      <li>Scope</li>
-                      <li>Model Diagram</li>
-                    </ol>
-                  </li>
-                  <li>Literature Survey
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Technologies Used
-                        <ol className="list-decimal pl-5 space-y-1">
-                          <li>Python</li>
-                          <li>Machine Learning</li>
-                        </ol>
-                      </li>
-                    </ol>
-                  </li>
-                  <li>System Analysis
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Existing System
-                        <ol className="list-decimal pl-5 space-y-1">
-                          <li>Disadvantages</li>
-                        </ol>
-                      </li>
-                      <li>Problem Statement</li>
-                      <li>Proposed System
-                        <ol className="list-decimal pl-5 space-y-1">
-                          <li>Advantages</li>
-                        </ol>
-                      </li>
-                    </ol>
-                  </li>
-                  <li>System Requirements Specification
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Functional Requirements</li>
-                      <li>Non-Functional Requirements</li>
-                      <li>Hardware Requirements</li>
-                      <li>Software Requirements</li>
-                    </ol>
-                  </li>
-                  <li>Implementation
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Implementation Steps</li>
-                      <li>Algorithms</li>
-                      <li>Sample Code</li>
-                    </ol>
-                  </li>
-                  <li>Discussion of Results</li>
-                  <li>Conclusion and Future Enhancements
-                    <ol className="list-decimal pl-5 space-y-1">
-                      <li>Conclusion</li>
-                      <li>Future Enhancement</li>
-                    </ol>
-                  </li>
-                  <li>References</li>
-                </ol>
-              </CardContent>
-            </Card>
-          </motion.div>
-
+          <TableOfContents />
           <Separator className="my-12" />
-
-          {/* List of Figures */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mb-12"
-          >
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <ListOrdered className="h-6 w-6 text-primary" />
-                  <CardTitle className="text-2xl">List of Figures</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="prose prose-slate max-w-none">
-                <ul className="list-decimal pl-5 space-y-1">
-                  <li>Figure 1: AI-Powered Study Planner Model Diagram</li>
-                  <li>Figure 2: System Architecture</li>
-                  <li>Figure 3: Machine Learning Workflow</li>
-                  <li>Figure 4: User Interface Screenshots</li>
-                  <li>Figure 5: Performance Metrics Visualization</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* List of Tables */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="mb-12"
-          >
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-3 mb-2">
-                  <ListOrdered className="h-6 w-6 text-primary" />
-                  <CardTitle className="text-2xl">List of Tables</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="prose prose-slate max-w-none">
-                <ul className="list-decimal pl-5 space-y-1">
-                  <li>Table 1: Comparison of Existing Systems</li>
-                  <li>Table 2: Hardware Requirements</li>
-                  <li>Table 3: Software Requirements</li>
-                  <li>Table 4: Performance Metrics</li>
-                  <li>Table 5: User Satisfaction Survey Results</li>
-                </ul>
-              </CardContent>
-            </Card>
-          </motion.div>
-
+          <ListsSection />
           <Separator className="my-12" />
-
-          {/* Abstract */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="mb-12"
-          >
+          
+          <ReportSection title="Abstract" icon={FileSearch} delay={0.4}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -235,17 +57,11 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-
+          </ReportSection>
+          
           <Separator className="my-12" />
-
-          {/* 1. INTRODUCTION */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.45 }}
-            className="mb-12"
-          >
+          
+          <ReportSection title="1. INTRODUCTION" icon={FileSearch} delay={0.45}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -296,15 +112,9 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 2. LITERATURE SURVEY */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="2. LITERATURE SURVEY" icon={BookOpen} delay={0.5}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -348,15 +158,9 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 3. SYSTEM ANALYSIS */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.55 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="3. SYSTEM ANALYSIS" icon={ChartPie} delay={0.55}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -417,15 +221,9 @@ const Reports = () => {
                 </ul>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 4. SYSTEM REQUIREMENTS SPECIFICATION */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="4. SYSTEM REQUIREMENTS SPECIFICATION" icon={Settings} delay={0.6}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -528,19 +326,13 @@ const Reports = () => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 5. IMPLEMENTATION */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.65 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="5. IMPLEMENTATION" icon={Brain} delay={0.65}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
-                  <FileCode className="h-6 w-6 text-primary" />
+                  <Brain className="h-6 w-6 text-primary" />
                   <CardTitle className="text-2xl">5. IMPLEMENTATION</CardTitle>
                 </div>
               </CardHeader>
@@ -678,15 +470,9 @@ const Reports = () => {
                 </div>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 6. DISCUSSION OF RESULTS */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="6. DISCUSSION OF RESULTS" icon={ChartPie} delay={0.7}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -755,15 +541,9 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 7. CONCLUSION AND FUTURE ENHANCEMENTS */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.75 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="7. CONCLUSION AND FUTURE ENHANCEMENTS" icon={FileText} delay={0.75}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -833,15 +613,9 @@ const Reports = () => {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
-
-          {/* 8. REFERENCES */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.8 }}
-            className="mb-12"
-          >
+          </ReportSection>
+          
+          <ReportSection title="8. REFERENCES" icon={FileText} delay={0.8}>
             <Card>
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
@@ -884,7 +658,7 @@ const Reports = () => {
                 </ol>
               </CardContent>
             </Card>
-          </motion.div>
+          </ReportSection>
         </div>
       </div>
     </PageTransition>
