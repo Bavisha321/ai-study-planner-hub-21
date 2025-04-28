@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Bookmark, Calendar, Clock, LineChart, BookOpen, CheckCircle, Star } from 'lucide-react';
+import { ArrowRight, Bookmark, Calendar, Clock, LineChart, BookOpen, CheckCircle, Star, FileChart } from 'lucide-react';
 
 const About = () => {
   const navigate = useNavigate();
@@ -62,6 +62,10 @@ const About = () => {
     // Mark that the user has seen the about page
     localStorage.setItem('hasSeenAbout', 'true');
     navigate('/home');
+  };
+
+  const handleViewReport = () => {
+    navigate('/reports');
   };
 
   return (
@@ -149,14 +153,26 @@ const About = () => {
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
               Your personalized study journey awaits. Click below to continue to your dashboard.
             </p>
-            <Button 
-              onClick={handleContinue}
-              size="lg" 
-              className="px-8 py-6 text-lg group"
-            >
-              Continue to Dashboard
-              <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                onClick={handleContinue}
+                size="lg" 
+                className="px-8 py-6 text-lg group"
+              >
+                Continue to Dashboard
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+              
+              <Button 
+                onClick={handleViewReport}
+                variant="outline"
+                size="lg" 
+                className="px-8 py-6 text-lg group"
+              >
+                <FileChart className="mr-2 h-5 w-5" />
+                View Research Report
+              </Button>
+            </div>
           </motion.div>
         </div>
       </div>
