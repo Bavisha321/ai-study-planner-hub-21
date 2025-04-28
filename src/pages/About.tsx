@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import PageTransition from '@/components/PageTransition';
@@ -77,7 +76,7 @@ const About = () => {
           >
             <h1 className="text-4xl md:text-5xl font-bold mb-6">Welcome to Your Study Planner</h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Your personalized learning journey starts here. Let's explore how to make the most of your study planner.
+              Our innovative study planner combines artificial intelligence with proven learning methodologies to create a personalized educational experience. By analyzing your learning patterns, preferences, and schedule, the system develops tailored study plans that adapt in real-time to your progress. Through intelligent algorithms, it optimizes your study sessions, suggests effective learning resources, and provides data-driven insights to enhance your academic performance. This comprehensive approach ensures efficient time management, improved retention, and measurable progress towards your educational goals.
             </p>
           </motion.div>
 
