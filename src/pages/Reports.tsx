@@ -1,5 +1,7 @@
+
 import PageTransition from '@/components/PageTransition';
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   BookOpen, 
   Brain, 
