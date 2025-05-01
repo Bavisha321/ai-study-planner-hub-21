@@ -53,6 +53,14 @@ type StudySession = {
   completed?: boolean;
 };
 
+// Create a type for AI recommendations
+type AIRecommendation = {
+  id: number;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+};
+
 // Create a local storage key for study sessions
 const STORAGE_KEY = 'study_sessions';
 
@@ -72,6 +80,28 @@ const StudyPlanner = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("plan");
   const [studySessions, setStudySessions] = useState<StudySession[]>(getStoredSessions());
+  const [currentSubject, setCurrentSubject] = useState<string>("General");
+  const [isGeneratingRecommendations, setIsGeneratingRecommendations] = useState(false);
+  const [recommendations, setRecommendations] = useState<AIRecommendation[]>([
+    {
+      id: 1,
+      icon: <Brain className="h-4 w-4 text-primary" />,
+      title: "Focus on Calculus",
+      description: "Your recent quiz scores indicate that you could benefit from reviewing derivatives and integrals. Consider scheduling 3 hours this week."
+    },
+    {
+      id: 2,
+      icon: <BookOpen className="h-4 w-4 text-primary" />,
+      title: "Physics Review Needed",
+      description: "You're excelling in theoretical concepts but could improve on problem-solving. Try working through practice examples for 2 hours."
+    },
+    {
+      id: 3,
+      icon: <TrendingUp className="h-4 w-4 text-primary" />,
+      title: "Optimal Study Times",
+      description: "Based on your activity patterns, you seem most productive between 9AM-11AM and 3PM-5PM. Schedule important topics during these times."
+    }
+  ]);
 
   // Load sessions from localStorage on component mount
   useEffect(() => {
@@ -82,6 +112,209 @@ const StudyPlanner = () => {
   useEffect(() => {
     saveSessionsToStorage(studySessions);
   }, [studySessions]);
+
+  // Generate AI recommendations based on selected subject
+  const generateRecommendations = () => {
+    setIsGeneratingRecommendations(true);
+    
+    // Simulate API call with a timeout
+    setTimeout(() => {
+      const subjectRecommendations = {
+        Mathematics: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Algebra Fundamentals",
+            description: "Your progress in calculus indicates a need to strengthen algebraic foundations. Focus on equation solving and factorization techniques."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Geometry Practice",
+            description: "We've noticed you excel in analytical problems but geometric visualizations need work. Try 2D and 3D visualization exercises."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Morning Math Sessions",
+            description: "Your performance metrics show higher retention of mathematical concepts in morning study sessions. Schedule math between 8AM-11AM."
+          }
+        ],
+        Physics: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Force and Motion",
+            description: "Your understanding of kinematics is solid, but Newton's Laws application needs improvement. Focus on force diagram problems."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Practical Experiments",
+            description: "Theoretical knowledge is strong, but application is weaker. Try to perform simple home experiments to visualize concepts."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Afternoon Physics Sessions",
+            description: "You retain physics concepts better when studying in the afternoon between 2PM-5PM. Adjust your schedule accordingly."
+          }
+        ],
+        "Computer Science": [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Algorithm Analysis",
+            description: "Your coding skills are strong but algorithm efficiency analysis needs work. Practice Big O notation and optimization techniques."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Project-Based Learning",
+            description: "You learn best by building. Create small projects that implement the concepts you're studying instead of just reading theory."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Evening Coding Sessions",
+            description: "Your GitHub commit history shows highest productivity between 7PM-10PM. Schedule coding practice during these hours."
+          }
+        ],
+        Biology: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Cell Biology Review",
+            description: "Your understanding of molecular processes is strong but cellular structures need review. Focus on organelle functions and interactions."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Visual Learning Approach",
+            description: "You respond well to visual learning. Use diagrams, videos and 3D models to reinforce biological concepts."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Spaced Repetition",
+            description: "Biological terminology requires frequent review. Implement a spaced repetition system for key terms and concepts."
+          }
+        ],
+        Chemistry: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Balancing Equations",
+            description: "Your understanding of chemical concepts is strong, but equation balancing needs practice. Focus on redox reactions particularly."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Organic Chemistry Focus",
+            description: "Your inorganic chemistry scores are excellent, but organic chemistry concepts show room for improvement. Prioritize this area."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Weekday Chemistry Sessions",
+            description: "Your performance data shows better retention when studying chemistry during weekdays rather than weekends. Plan accordingly."
+          }
+        ],
+        History: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Timeline Mastery",
+            description: "Your essay analysis shows strong critical thinking but chronological confusion. Create a master timeline of key historical events."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Primary Source Analysis",
+            description: "Supplement textbook learning with primary source documents to develop a deeper understanding of historical perspectives."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Connection Mapping",
+            description: "Create cause-effect maps connecting events across different regions and time periods to strengthen your contextual understanding."
+          }
+        ],
+        Geography: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Map Skills Practice",
+            description: "Your theoretical knowledge is strong but map identification skills need improvement. Practice with blank maps regularly."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Climate Pattern Analysis",
+            description: "Focus on the relationship between geographical features and climate patterns, an area where your test scores show room for growth."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Interactive Learning",
+            description: "You respond well to interactive content. Use geography apps and interactive maps to reinforce concepts and locations."
+          }
+        ],
+        Literature: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Literary Analysis Techniques",
+            description: "Your comprehension is excellent but analytical depth could improve. Practice identifying literary devices and their effects."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Contextual Reading",
+            description: "Research historical and cultural contexts before reading major works to enhance your understanding of themes and character motivations."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Writing Alongside Reading",
+            description: "Keep a reading journal where you write responses to what you read. This active approach matches your learning style better than passive reading."
+          }
+        ],
+        General: [
+          {
+            id: 1,
+            icon: <Brain className="h-4 w-4 text-primary" />,
+            title: "Focus on Weak Areas",
+            description: "Based on your overall performance, concentrate on strengthening fundamentals before advancing to complex topics."
+          },
+          {
+            id: 2,
+            icon: <BookOpen className="h-4 w-4 text-primary" />,
+            title: "Balanced Study Approach",
+            description: "Your learning analytics suggest alternating between subjects rather than deep-diving into one subject for too long."
+          },
+          {
+            id: 3,
+            icon: <TrendingUp className="h-4 w-4 text-primary" />,
+            title: "Personalized Study Times",
+            description: "Your productivity peaks between 10AM-1PM and again from 4PM-7PM. Schedule challenging topics during these windows."
+          }
+        ]
+      };
+      
+      // Find the subject in our recommendations map, fallback to General if not found
+      const newRecommendations = subjectRecommendations[currentSubject as keyof typeof subjectRecommendations] || 
+                                subjectRecommendations.General;
+      
+      setRecommendations(newRecommendations);
+      setIsGeneratingRecommendations(false);
+      
+      toast({
+        title: "Recommendations Updated",
+        description: `New AI recommendations generated for ${currentSubject}`,
+      });
+    }, 1500);
+  };
 
   // Form for adding new study sessions
   const form = useForm<NewSessionFormValues>({
@@ -95,6 +328,16 @@ const StudyPlanner = () => {
       priority: "Medium",
     },
   });
+
+  // Update the current subject when a new session is being created
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.subject) {
+        setCurrentSubject(value.subject);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form.watch]);
 
   function onSubmit(data: NewSessionFormValues) {
     // Create a new session with a unique ID
@@ -117,6 +360,9 @@ const StudyPlanner = () => {
       title: "Study session added",
       description: `Added ${data.subject} - ${data.topic} to your study plan.`,
     });
+
+    // Update current subject for recommendations
+    setCurrentSubject(data.subject);
 
     // Reset the form
     form.reset();
@@ -397,55 +643,78 @@ const StudyPlanner = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="p-4 border rounded-lg bg-muted/40">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-full bg-primary/10 p-2">
-                        <Brain className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Focus on Calculus</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Your recent quiz scores indicate that you could benefit from reviewing derivatives
-                          and integrals. Consider scheduling 3 hours this week.
-                        </p>
-                      </div>
-                    </div>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-lg font-medium">Subject Focus</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Recommendations are currently focused on <span className="font-medium">{currentSubject}</span>
+                    </p>
                   </div>
-                  
-                  <div className="p-4 border rounded-lg bg-muted/40">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-full bg-primary/10 p-2">
-                        <BookOpen className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Physics Review Needed</h4>
-                        <p className="text-sm text-muted-foreground">
-                          You're excelling in theoretical concepts but could improve on problem-solving.
-                          Try working through practice examples for 2 hours.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-4 border rounded-lg bg-muted/40">
-                    <div className="flex items-start gap-3">
-                      <div className="rounded-full bg-primary/10 p-2">
-                        <TrendingUp className="h-4 w-4 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="font-medium">Optimal Study Times</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Based on your activity patterns, you seem most productive between 9AM-11AM
-                          and 3PM-5PM. Schedule important topics during these times.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <Select
+                    value={currentSubject} 
+                    onValueChange={(value) => setCurrentSubject(value)}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="General">General</SelectItem>
+                      <SelectItem value="Mathematics">Mathematics</SelectItem>
+                      <SelectItem value="Physics">Physics</SelectItem>
+                      <SelectItem value="Chemistry">Chemistry</SelectItem>
+                      <SelectItem value="Biology">Biology</SelectItem>
+                      <SelectItem value="Computer Science">Computer Science</SelectItem>
+                      <SelectItem value="History">History</SelectItem>
+                      <SelectItem value="Geography">Geography</SelectItem>
+                      <SelectItem value="Literature">Literature</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
+                
+                {isGeneratingRecommendations ? (
+                  <div className="flex flex-col items-center justify-center py-8">
+                    <div className="w-16 h-16 rounded-full border-4 border-primary/30 border-t-primary animate-spin mb-4"></div>
+                    <p className="font-medium text-lg">Generating Recommendations</p>
+                    <p className="text-muted-foreground">Analyzing your learning data...</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {recommendations.map((recommendation) => (
+                      <div key={recommendation.id} className="p-4 border rounded-lg bg-muted/40">
+                        <div className="flex items-start gap-3">
+                          <div className="rounded-full bg-primary/10 p-2">
+                            {recommendation.icon}
+                          </div>
+                          <div>
+                            <h4 className="font-medium">{recommendation.title}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {recommendation.description}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
               <CardFooter>
-                <Button className="w-full">Generate New Recommendations</Button>
+                <Button 
+                  className="w-full"
+                  onClick={generateRecommendations}
+                  disabled={isGeneratingRecommendations}
+                >
+                  {isGeneratingRecommendations ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Generating...
+                    </>
+                  ) : (
+                    "Generate New Recommendations"
+                  )}
+                </Button>
               </CardFooter>
             </Card>
           </TabsContent>
