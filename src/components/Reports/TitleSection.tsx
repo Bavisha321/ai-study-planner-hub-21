@@ -7,13 +7,15 @@ interface TitleSectionProps {
   subtitle?: string;
   preparedBy?: string;
   date?: string;
+  icon?: React.ReactNode;
 }
 
 const TitleSection = ({ 
   title = "AI-Powered Personalized Learning Study Planner", 
   subtitle = "A comprehensive report on our AI-driven study planning system",
   preparedBy = "Research Team",
-  date = "April 2025"
+  date = "April 2025",
+  icon = <FileText className="h-10 w-10 text-primary mx-auto mb-4" />
 }: TitleSectionProps) => {
   return (
     <motion.div 
@@ -22,6 +24,7 @@ const TitleSection = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
+      {icon}
       <h1 className="text-4xl md:text-5xl font-bold mb-6">{title}</h1>
       <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
         {subtitle}
