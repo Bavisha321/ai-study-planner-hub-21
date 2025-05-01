@@ -18,6 +18,7 @@ import Register from "./pages/Register";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Reports from "./pages/Reports";
+import ExtraReport from "./pages/ExtraReport";
 
 const queryClient = new QueryClient();
 
@@ -67,6 +68,7 @@ const WrappedRoutes = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/extra-report" element={<ExtraReport />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AppLayout>
