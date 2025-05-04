@@ -1,12 +1,17 @@
 
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { User } from "lucide-react";
 
 const NavigationBar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const isLanding = location.pathname === '/';
+  const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
   
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +21,10 @@ const NavigationBar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
 
   return (
     <nav 
@@ -36,8 +45,26 @@ const NavigationBar = () => {
         
         <div className="hidden md:flex space-x-1">
           <NavLink to="/home">Home</NavLink>
-          <NavLink to="/login">Login</NavLink>
-          <NavLink to="/register">Register</NavLink>
+          {!isLoggedIn ? (
+            <>
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </>
+          ) : (
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="ml-2" 
+              onClick={handleProfileClick}
+              aria-label="Profile"
+            >
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="bg-primary/10 text-primary">
+                  <User size={16} />
+                </AvatarFallback>
+              </Avatar>
+            </Button>
+          )}
           <NavLink to="/about">About</NavLink>
         </div>
         

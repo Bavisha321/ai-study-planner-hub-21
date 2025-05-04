@@ -21,6 +21,7 @@ import NotFound from "./pages/NotFound";
 import Reports from "./pages/Reports";
 import ExtraReport from "./pages/ExtraReport";
 import ThirdReport from "./pages/ThirdReport";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -39,8 +40,8 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
 // Create a component to conditionally render the sidebar
 const AppLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
-  const showSidebar = ['/home', '/courses', '/analytics', '/study-planner', '/settings'].includes(location.pathname);
-  const isDashboardPage = ['/home', '/courses', '/analytics', '/study-planner', '/settings'].includes(location.pathname);
+  const showSidebar = ['/home', '/courses', '/analytics', '/study-planner', '/settings', '/profile'].includes(location.pathname);
+  const isDashboardPage = ['/home', '/courses', '/analytics', '/study-planner', '/settings', '/profile'].includes(location.pathname);
   
   return (
     <>
@@ -66,6 +67,7 @@ const WrappedRoutes = () => {
           <Route path="/analytics" element={<Analytics />} />
           <Route path="/study-planner" element={<StudyPlanner />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/about" element={<About />} />

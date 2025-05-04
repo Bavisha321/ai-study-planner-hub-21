@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -32,8 +31,9 @@ const Login = () => {
       
       // Simple validation
       if (formData.email && formData.password) {
-        // Store login state
+        // Store login state and email
         localStorage.setItem('userLoggedIn', 'true');
+        localStorage.setItem('userEmail', formData.email);
         
         toast.success('Successfully logged in!');
         
