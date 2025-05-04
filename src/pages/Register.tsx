@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import PageTransition from '@/components/PageTransition';
@@ -54,6 +54,13 @@ const Register = () => {
       }
     }, 1500);
   };
+
+  // Check if already logged in
+  useEffect(() => {
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   return (
     <PageTransition>

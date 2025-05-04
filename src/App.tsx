@@ -30,7 +30,7 @@ const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   const isLoggedIn = localStorage.getItem('userLoggedIn') === 'true';
   const location = useLocation();
   
-  if (!isLoggedIn && !['/', '/login', '/register'].includes(location.pathname)) {
+  if (!isLoggedIn && !['/login', '/register', '/'].includes(location.pathname)) {
     return <Navigate to="/login" replace />;
   }
   

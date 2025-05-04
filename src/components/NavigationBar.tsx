@@ -44,26 +44,28 @@ const NavigationBar = () => {
         </Link>
         
         <div className="hidden md:flex space-x-1">
-          <NavLink to="/home">Home</NavLink>
           {!isLoggedIn ? (
             <>
               <NavLink to="/login">Login</NavLink>
               <NavLink to="/register">Register</NavLink>
             </>
           ) : (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="ml-2" 
-              onClick={handleProfileClick}
-              aria-label="Profile"
-            >
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary/10 text-primary">
-                  <User size={16} />
-                </AvatarFallback>
-              </Avatar>
-            </Button>
+            <>
+              <NavLink to="/home">Home</NavLink>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="ml-2" 
+                onClick={handleProfileClick}
+                aria-label="Profile"
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    <User size={16} />
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </>
           )}
           <NavLink to="/about">About</NavLink>
         </div>

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -44,6 +45,13 @@ const Login = () => {
       }
     }, 1500);
   };
+
+  // Check if already logged in
+  useEffect(() => {
+    if (localStorage.getItem('userLoggedIn') === 'true') {
+      navigate('/home');
+    }
+  }, [navigate]);
 
   return (
     <PageTransition>
