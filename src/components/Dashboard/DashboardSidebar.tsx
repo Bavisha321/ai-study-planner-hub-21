@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from "@/lib/utils";
-import { BarChart2, BookOpen, Calendar, Home, Settings, LogIn, UserPlus } from "lucide-react";
+import { BarChart2, BookOpen, Calendar, Home, Settings } from "lucide-react";
 
 const DashboardSidebar = () => {
   const location = useLocation();
@@ -41,24 +41,6 @@ const DashboardSidebar = () => {
       hoverGradient: "from-amber-600 to-orange-700",
       iconBg: "bg-amber-100",
       activeBg: "bg-gradient-to-r from-amber-600 to-orange-700"
-    },
-    { 
-      icon: LogIn, 
-      label: 'Login', 
-      path: '/login',
-      gradient: "from-teal-500 to-cyan-600",
-      hoverGradient: "from-teal-600 to-cyan-700",
-      iconBg: "bg-teal-100",
-      activeBg: "bg-gradient-to-r from-teal-600 to-cyan-700"
-    },
-    { 
-      icon: UserPlus, 
-      label: 'Register', 
-      path: '/register',
-      gradient: "from-pink-500 to-rose-600",
-      hoverGradient: "from-pink-600 to-rose-700",
-      iconBg: "bg-pink-100",
-      activeBg: "bg-gradient-to-r from-pink-600 to-rose-700"
     },
     { 
       icon: Settings, 
