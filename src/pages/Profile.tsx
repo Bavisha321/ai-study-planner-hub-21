@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { User, Settings, Lock } from 'lucide-react';
+import { User, Settings, Lock, LogOut } from 'lucide-react';
 import PageTransition from '@/components/PageTransition';
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -121,6 +120,20 @@ const Profile = () => {
       }));
       setIsLoading(false);
       toast.success("Password changed successfully!");
+    }, 1000);
+  };
+
+  const handleLogout = () => {
+    // Clear user authentication data
+    localStorage.removeItem('userLoggedIn');
+    localStorage.removeItem('userEmail');
+    
+    toast.success('Logged out successfully!');
+    
+    // Navigate to landing page first, then to register
+    navigate('/');
+    setTimeout(() => {
+      navigate('/register');
     }, 1000);
   };
 
@@ -267,7 +280,15 @@ const Profile = () => {
                     <h3 className="font-medium">Member Since</h3>
                     <p className="text-muted-foreground">{userProfile?.joinedDate}</p>
                   </div>
-                  <div className="border-t pt-4 mt-4">
+                  <div className="border-t pt-4 mt-4 space-y-4">
+                    <Button 
+                      onClick={handleLogout}
+                      variant="outline"
+                      className="flex items-center gap-2"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </Button>
                     <Button variant="destructive">
                       Delete Account
                     </Button>
