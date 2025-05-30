@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -59,14 +58,8 @@ const Index = () => {
     if (isUserLoggedIn) {
       navigate('/home');
     } else {
-      // Check if user has already visited before
-      const hasVisited = localStorage.getItem('hasVisited') === 'true';
-      if (hasVisited) {
-        navigate('/login');
-      } else {
-        localStorage.setItem('hasVisited', 'true');
-        navigate('/register');
-      }
+      // Always redirect to register page first
+      navigate('/register');
     }
   };
 
@@ -258,7 +251,7 @@ const Index = () => {
               <div className="text-sm text-muted-foreground mt-2">
                 {isUserLoggedIn 
                   ? "Continue your learning journey" 
-                  : "New here? Create an account or log in to get started"}
+                  : "Create an account to get started"}
               </div>
             </motion.div>
           </div>
